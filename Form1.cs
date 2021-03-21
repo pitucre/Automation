@@ -285,6 +285,7 @@ namespace ForECC
             string strTableName = "", strPasteContent = "";
             string strTableNameBk = "";//特殊规则查找的tablename
             string tag = "count(*) from ";
+            string strLastItem = "";
 
             bool bFindTable = false;//判断是否发现表名
             bool bFindItem = false;//判断是否发现表名
@@ -295,7 +296,7 @@ namespace ForECC
                 while ((line = file.ReadLine()) != null)
                 {
                     //一些特殊注释语句删掉
-                    if (line.Trim().Length >= 2 && line.Trim().Substring(0, 2) == "//" && (line.Contains("YZSoft.BPM.FormManager.Open") || line.Contains("header") || line.Contains("autoExpandColumn")))
+                    if (line.Trim().Length >= 2 && line.Trim().Substring(0, 2) == "//" && (line.Contains("YZSoft.BPM.FormManager.Open") || line.Contains("header") || line.Contains("autoExpandColumn")||line.Contains("item.Attributes.Add")))
                     {
                         Console.WriteLine("注释语句删除");
 
@@ -313,7 +314,8 @@ namespace ForECC
 
 
                         //是否发现item属性模块
-                        if (line.Contains("item.Attributes.Add") && !line.Contains("flag", StringComparison.OrdinalIgnoreCase) && !line.Contains("CapFlag", StringComparison.OrdinalIgnoreCase))
+                        //if (line.Contains("item.Attributes.Add") && !line.Contains("flag", StringComparison.OrdinalIgnoreCase) && !line.Contains("CapFlag", StringComparison.OrdinalIgnoreCase))
+                        if (line.Contains("item.Attributes.Add") && (line.Contains("reader.", StringComparison.OrdinalIgnoreCase) || line.Contains("")))
                         //if (line.Contains("item.Attributes.Add"))
 
                         {
@@ -342,7 +344,7 @@ namespace ForECC
                                         line = line.Replace("]));", "));");//末尾字符处理
 
                                     }
-                                    
+
                                     line = line.Replace("]))", ")))");//中间字符处理
                                     line = line.Replace("])", "))");//中间字符处理
                                 }
@@ -350,7 +352,7 @@ namespace ForECC
                                 {
                                     line = line.Replace("])", ")");
                                 }
-                                                           
+
                                 //line = line.Replace("])", ")");
                             }
                             else//如果有空字符串
@@ -362,6 +364,8 @@ namespace ForECC
 
 
                             strPasteContent = strPasteContent + line + "\r\n ";
+
+                            strLastItem = line;
 
                         }
 
@@ -466,21 +470,49 @@ namespace ForECC
             if (bFindItem == true)//如果存在要粘贴的内容
             {
                 iItemStart = strContent.IndexOf("item[");
-                iItemEnd = strContent.IndexOf("rowNum++");
-                iItemEndTemp = strContent.IndexOf("}", iItemStart);
-                if (iItemEnd < 0)//如果没有rowNum++用}好代替结尾
+                //iItemEnd = strContent.IndexOf("rowNum++");
+                //iItemEndTemp = strContent.IndexOf("}", iItemStart);
+                //if (iItemEnd < 0)//如果没有rowNum++用}好代替结尾
+                //{
+                //    iItemEnd = iItemEndTemp;
+                //}
+                //else
+                //{
+                //    //if (iItemEnd>iItemEndTemp)
+                //    //{
+                //    //    iItemEnd = iItemEndTemp;
+                //    //}
+                //}
+
+
+                //strPasteContent = strContent.Substring(iItemStart, iItemEnd - iItemStart - 1);//要粘贴的内容
+
+                iItemEnd = strContent.IndexOf(strLastItem);
+                strPasteContent = strContent.Substring(iItemStart, iItemEnd - iItemStart + strLastItem.Length);
+
+                string strPasteContentTemp = strPasteContent.Replace("//{", "").Replace("//}", "");
+                if (strPasteContentTemp.Contains("{"))
                 {
-                    iItemEnd = iItemEndTemp;
-                }
-                else
-                {
-                    //if (iItemEnd>iItemEndTemp)
-                    //{
-                    //    iItemEnd = iItemEndTemp;
-                    //}
+                    int iCountLeft = 0;
+                    int iCountRight = 0;
+                    for (int i = 0; i < strPasteContentTemp.Length; i++)
+                    {
+                        if (strPasteContentTemp[i] == '{')
+                        {
+                            iCountLeft++;
+                        }
+                        if (strPasteContentTemp[i] == '}')
+                        {
+                            iCountRight++;
+                        }
+                    }
+
+                    if (iCountRight < iCountLeft)
+                    {
+                        strPasteContent = strPasteContent + "}";
+                    }
                 }
 
-                strPasteContent = strContent.Substring(iItemStart, iItemEnd - iItemStart - 1);//要粘贴的内容
 
             }
             else
@@ -522,7 +554,7 @@ namespace ForECC
                     {
                         if (!string.IsNullOrEmpty(strTableName))
                         {
-                            strNewContent = strNewContent + line.Replace("&&TableName", strTableName.Replace("\"","")) + "\r\n ";//如果获取的表名里面有
+                            strNewContent = strNewContent + line.Replace("&&TableName", strTableName.Replace("\"", "")) + "\r\n ";//如果获取的表名里面有
                         }
                         else
                         {
@@ -728,7 +760,11 @@ namespace ForECC
                                 {
                                     foreach (FileInfo AshxFile in ECCFolder.GetFiles())
                                     {
-                                        //if (AshxFile.Name.Contains("BGVisiterApplication"))
+                                        if (AshxFile.Name.Contains("SYSModuleTree.ashx"))
+                                        {
+                                            continue;//这个文件已经修改完成不需要遍历
+                                        }
+                                        if (AshxFile.Name.Contains("DepartmentData"))
                                             //if (ECCFolder.Parent.Name == strPatternFolder)
                                             //{
                                             //    FormatAshxFile(AshxFile.FullName, AshxFile.Name.Replace(".exclude", "").Replace(".ashx", ""), ECCFolder.Parent.Name);
