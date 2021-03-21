@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "POjykNu1Znd+M0nAB5L6QEUsKgrWoCX6MewFCUXP0s6npWUP+YtdWoxR4yeIcvSKg1qDhQR0fftmddiLN3V/1A==",
+  "success": true,
+  "projectFilePath": "D:\\Source\\ECC\\ForECC\\ForECC.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\bjliu\\.nuget\\packages\\microsoft.netcore.app.ref\\3.1.0\\microsoft.netcore.app.ref.3.1.0.nupkg.sha512",
+    "C:\\Users\\bjliu\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\3.1.0\\microsoft.windowsdesktop.app.ref.3.1.0.nupkg.sha512"
+  ],
+  "logs": []
+}
