@@ -306,6 +306,7 @@ namespace ForECC
                         {
                             //ltBoxConverted.Items.Add(strProcessName + ".ashx文件已更新过！");
                             WriteLog(strProcessName, ltBoxConverted, ".ashx文件已更新过！");
+                            file.Close();
                             return;
                         }
 
@@ -388,7 +389,7 @@ namespace ForECC
                                 iTableNameEnd = line.IndexOf("{", iTableNameStart);//查找发现字符串后一个出现"{"的位置
                                 if (iTableNameEnd < 0)
                                 {
-                                    iTableNameEnd = line.IndexOf(" ", iTableNameStart + tag.Length + 1);//查找发现字符串后一个出现"{"的位置
+                                    iTableNameEnd = line.IndexOf(" ", iTableNameStart + tag.Length + 1);//查找发现字符串后一个出现" "的位置
                                     strTableName = line.Substring(iTableNameStart + tag.Length, iTableNameEnd - iTableNameStart - tag.Length);
 
                                 }
@@ -445,6 +446,7 @@ namespace ForECC
 
                         }
                     }
+                    fileRepeat.Close();
                 }
             }
             if (bFindTable == false)
@@ -461,26 +463,26 @@ namespace ForECC
                 return;
             }
 
-            //if (bFindItem == true)//如果存在要粘贴的内容
-            //{
-            //    iItemStart = strContent.IndexOf("item[");
-            //    iItemEnd = strContent.IndexOf("rowNum++");
-            //    iItemEndTemp = strContent.IndexOf("}", iItemStart);
-            //    if (iItemEnd < 0)//如果没有rowNum++用}好代替结尾
-            //    {
-            //        iItemEnd = iItemEndTemp;
-            //    }
-            //    else
-            //    {
-            //        //if (iItemEnd>iItemEndTemp)
-            //        //{
-            //        //    iItemEnd = iItemEndTemp;
-            //        //}
-            //    }
+            if (bFindItem == true)//如果存在要粘贴的内容
+            {
+                iItemStart = strContent.IndexOf("item[");
+                iItemEnd = strContent.IndexOf("rowNum++");
+                iItemEndTemp = strContent.IndexOf("}", iItemStart);
+                if (iItemEnd < 0)//如果没有rowNum++用}好代替结尾
+                {
+                    iItemEnd = iItemEndTemp;
+                }
+                else
+                {
+                    //if (iItemEnd>iItemEndTemp)
+                    //{
+                    //    iItemEnd = iItemEndTemp;
+                    //}
+                }
 
-            //    strPasteContent = strContent.Substring(iItemStart, iItemEnd - iItemStart - 1);//要粘贴的内容
+                strPasteContent = strContent.Substring(iItemStart, iItemEnd - iItemStart - 1);//要粘贴的内容
 
-            //}
+            }
             else
             {
 
@@ -545,7 +547,7 @@ namespace ForECC
             FileStream fsw = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Write);
             using (StreamWriter sw = new StreamWriter(fsw, Encoding.UTF8))
             {
-                sw.Flush();
+                //sw.Flush();
                 sw.Write(strNewContent.Trim());
                 //sw.Write("");
                 sw.Close();
@@ -726,7 +728,7 @@ namespace ForECC
                                 {
                                     foreach (FileInfo AshxFile in ECCFolder.GetFiles())
                                     {
-                                        //if (AshxFile.Name.Contains("CS_MBS_ModdleData"))
+                                        //if (AshxFile.Name.Contains("BGVisiterApplication"))
                                             //if (ECCFolder.Parent.Name == strPatternFolder)
                                             //{
                                             //    FormatAshxFile(AshxFile.FullName, AshxFile.Name.Replace(".exclude", "").Replace(".ashx", ""), ECCFolder.Parent.Name);
