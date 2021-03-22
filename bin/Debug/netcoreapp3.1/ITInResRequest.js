@@ -158,7 +158,7 @@
         //YZSoft.bpm.src.ux.FormManager.openFormApplication('Demo/ProductionDevice/ProductionDevice', '', 'New', Ext.apply({
         YZSoft.bpm.src.ux.FormManager.openPostWindow(this.ProcessName, {
             sender: me,
-            title: '客户来访提报',
+            title: '&&PNameCN',
             listeners: {
                 submit: function (action, data) {
                     me.store.reload({

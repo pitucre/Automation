@@ -158,26 +158,29 @@ namespace ForECC
 
             if (iProcessNameStart < 0)
             {
-                tag = "OpenFormApplication('";
-                iFormApplicationStart = strContent.IndexOf(tag);
-                if (iFormApplicationStart < 0)
-                {
-                    //MessageBox.Show("没有发现字符串" + tag + "请确认！");
-                    //ltBoxNoExistString.Items.Add(strProcessName + "未发现Form 或者Window" + tag);
-                    WriteLog(strProcessName, ltBoxNoExistString, "未发现Form 或者Window" + tag);
-                    return;
-                }
-                else
-                {
-                    iFormApplicationEnd = strContent.IndexOf("',", iFormApplicationStart);
-                    strOpenFormApplication = strContent.Substring(iFormApplicationStart + tag.Length, iFormApplicationEnd - iFormApplicationStart - tag.Length);
-                }
+                WriteLog(strProcessName, ltBoxNoExistString, "未发现Window" + tag);
+                return;
             }
             else
             {
                 iProcessNameEnd = strContent.IndexOf("', '',");
                 strOpenPostWindow = strContent.Substring(iProcessNameStart + tag.Length, iProcessNameEnd - iProcessNameStart - tag.Length);
 
+            }
+
+            tag = "OpenFormApplication('";
+            iFormApplicationStart = strContent.IndexOf(tag);
+            if (iFormApplicationStart < 0)
+            {
+                //MessageBox.Show("没有发现字符串" + tag + "请确认！");
+                //ltBoxNoExistString.Items.Add(strProcessName + "未发现Form 或者Window" + tag);
+                WriteLog(strProcessName, ltBoxNoExistString, "未发现Form" + tag);
+                return;
+            }
+            else
+            {
+                iFormApplicationEnd = strContent.IndexOf("',", iFormApplicationStart);
+                strOpenFormApplication = strContent.Substring(iFormApplicationStart + tag.Length, iFormApplicationEnd - iFormApplicationStart - tag.Length);
             }
 
             //string strPattern = "[\u4E00-\u9FA5]{0,}";
@@ -296,7 +299,7 @@ namespace ForECC
                 while ((line = file.ReadLine()) != null)
                 {
                     //一些特殊注释语句删掉
-                    if (line.Trim().Length >= 2 && line.Trim().Substring(0, 2) == "//" && (line.Contains("YZSoft.BPM.FormManager.Open") || line.Contains("header") || line.Contains("autoExpandColumn")||line.Contains("item.Attributes.Add")))
+                    if (line.Trim().Length >= 2 && line.Trim().Substring(0, 2) == "//" && (line.Contains("YZSoft.BPM.FormManager.Open") || line.Contains("header") || line.Contains("autoExpandColumn") || line.Contains("item.Attributes.Add")))
                     {
                         Console.WriteLine("注释语句删除");
 
@@ -652,10 +655,154 @@ namespace ForECC
 
         private void btnFileBrowse_Click(object sender, EventArgs e)
         {
+            menuFD_ECC.FileName = Directory.GetCurrentDirectory() + "\\ProModuleTree.ashx";
+            string line;
 
-            //openFileDialog1.FileName= @"D:\Source\ECC\FlowPortal BPM 6.x\WEB\YZModules\ITProcess\StoreDataService\gonggao_Data.ashx.exclude";
-            openFileDialog1.ShowDialog();
-            MessageBox.Show(openFileDialog1.FileName);
+            int iCount;
+
+            string strContent = "";
+
+            Dictionary<int, string> dicMain = new Dictionary<int, string>();
+            Dictionary<int, string> dicSub = new Dictionary<int, string>();
+
+            string strSpec = "";
+
+            if (menuFD_ECC.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                FileStream fsr = new FileStream(menuFD_ECC.FileName, FileMode.Open, FileAccess.Read);
+                using (StreamReader sr = new StreamReader(menuFD_ECC.FileName, Encoding.UTF8))//超级重要，必须以UTF-8格式打开
+                {
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        //if (line.Contains("item.Attributes["))
+                        //{
+                        //    strContent = strContent + line + "/r/n";
+
+                        //}
+
+            //            strSpec = @"            item = new JsonItem();
+            //rootItems.Add(item);
+            //                      ";
+            //            if (line.Contains(strSpec))
+            //            {
+            //                line = line.Replace(strSpec, @" }
+            //                                                }
+            //                                                new
+            //                                            {");
+            //                strContent = strContent + line + "\r\n ";
+            //            }
+
+                        //strSpec = "item = new JsonItem();";
+                        //if (line.Contains(strSpec))
+                        //{
+                        //    line = line.Replace(strSpec, "new");
+                        //    strContent = strContent + line + "\r\n ";
+                        //}
+                        strSpec = "rootItems.Add(item);";
+                        if (line.Contains(strSpec))
+                        {
+                            line = "{";
+                            strContent = strContent + line + "\r\n ";
+                        }
+                        strSpec = "item.Attributes[\"text\"]";
+                        if (line.Contains(strSpec))
+                        {
+                            line = line.Replace(strSpec, "text").Replace(";", ",");
+                            strContent = strContent + line + "\r\n ";
+                        }
+
+                        strSpec = "item.Attributes[\"expanded\"] ";
+                        if (line.Contains(strSpec))
+                        {
+                            line = "expanded = true,";
+                            strContent = strContent + line + "\r\n ";
+                        }
+                        strSpec = "children = new JsonItemCollection();";
+                        if (line.Contains(strSpec))
+                        {
+                            line = "children = new object[]{";
+                            strContent = strContent + line + "\r\n ";
+                        }
+                        strSpec = "children.Add(item);";
+                        if (line.Contains(strSpec))
+                        {
+                            line = "{";
+                            strContent = strContent + line + "\r\n ";
+                        }
+
+                        strSpec = "item.Attributes[\"id\"]";
+                        if (line.Contains(strSpec))
+                        {
+                            line = line.Replace(strSpec, "id").Replace(";", ",");
+                            strContent = strContent + line + "\r\n ";
+                        }
+
+                        strSpec = "item.Attributes[\"text\"]";
+                        if (line.Contains(strSpec))
+                        {
+                            line = line.Replace(strSpec, "text").Replace(";", ",");
+                            strContent = strContent + line + "\r\n ";
+                        }
+                        strSpec = "item.Attributes[\"moduleUrl\"]";
+
+                        if (line.Contains(strSpec))
+                        {
+                            line = line.Replace(strSpec, "xclass").Replace(";", "},").Replace("/", ".").Replace(".js", "");
+                            strContent = strContent + line + "\r\n ";
+                            if (strContent.Contains("{"))
+                            {
+                                int iCountLeft = 0, iCountRight = 0;
+                                for (int i = 0; i < strContent.Length; i++)
+                                {
+                                    if (strContent[i] == '{')
+                                    {
+                                        iCountLeft++;
+                                    }
+                                    if (strContent[i] == '}')
+                                    {
+                                        iCountRight++;
+                                    }
+                                }
+
+                                if (iCountRight < iCountLeft)
+                                {
+                                    strContent = strContent + @"}
+                                }";
+                                }
+
+                            }
+
+                        }
+
+                        //strContent = strContent + line + "\r\n ";
+
+
+                    }
+                    sr.Close();
+                    fsr.Close();
+                }
+
+                string strOutFileName = Directory.GetCurrentDirectory() + "\\ProModuleTreeNew.ashx";
+                //if (!File.Exists(strOutFileName))
+                //{
+                //    File.Create(strOutFileName);
+                //}
+                FileStream fsw = new FileStream(strOutFileName, FileMode.Open, FileAccess.Write);
+                using (StreamWriter sw = new StreamWriter(fsw, Encoding.UTF8))
+                {
+                    sw.Write(strContent);
+                    //sw.Write("");
+                    sw.Close();
+                    fsw.Close();
+
+                    WriteLog(strOutFileName, ltBoxStoreDataService);
+                }
+            }
+            else
+            {
+                MessageBox.Show("您没有选择任何文件!");
+            }
+
         }
 
         private void btnConvert_Click(object sender, EventArgs e)
@@ -727,33 +874,33 @@ namespace ForECC
                                 {
                                     foreach (FileInfo JsFile in ECCFolder.GetFiles())
                                     {
-                                        //if (JsFile.Name == "ITAddOthSupplie.js")
+                                        //if (JsFile.Name.Contains("gonggao"))
 
-                                        //if (ckBoxConvertFolder.Checked==true)
-                                        //{
-                                        //strPatternFolder = cmbConvertFolder.SelectedText;//只有这个文件夹才替换
+                                            //if (ckBoxConvertFolder.Checked==true)
+                                            //{
+                                            //strPatternFolder = cmbConvertFolder.SelectedText;//只有这个文件夹才替换
 
-                                        //}
+                                            //}
 
-                                        //if (cmbConvertFolder.SelectedText!="ALL")
-                                        //{
-                                        //if (ECCFolder.Parent.Name == strPatternFolder)
-                                        //{
+                                            //if (cmbConvertFolder.SelectedText!="ALL")
+                                            //{
+                                            //if (ECCFolder.Parent.Name == strPatternFolder)
+                                            //{
 
-                                        //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
-
-
-                                        //}
-                                        //else
-                                        //{
-                                        //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
-                                        //    this.ltBoxModules.Items.Add(JsFile.Name);
-                                        //}
+                                            //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
 
 
+                                            //}
+                                            //else
+                                            //{
+                                            //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
+                                            //    this.ltBoxModules.Items.Add(JsFile.Name);
+                                            //}
 
-                                        //}
-                                        FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
+
+
+                                            //}
+                                            FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
                                     }
                                 }
                                 if (ECCFolder.Name == "StoreDataService")//如果找到StoreDataService文件夹循环处理ashx文件
@@ -764,7 +911,7 @@ namespace ForECC
                                         {
                                             continue;//这个文件已经修改完成不需要遍历
                                         }
-                                        if (AshxFile.Name.Contains("DepartmentData"))
+                                        //if (AshxFile.Name.Contains("gonggao"))
                                             //if (ECCFolder.Parent.Name == strPatternFolder)
                                             //{
                                             //    FormatAshxFile(AshxFile.FullName, AshxFile.Name.Replace(".exclude", "").Replace(".ashx", ""), ECCFolder.Parent.Name);

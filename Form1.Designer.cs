@@ -31,7 +31,7 @@ namespace ForECC
         {
             this.rTBoxOrigin = new System.Windows.Forms.RichTextBox();
             this.rTBoxTarget = new System.Windows.Forms.RichTextBox();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.menuFD_ECC = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.btnFileBrowse = new System.Windows.Forms.Button();
             this.btnFolderBrowse = new System.Windows.Forms.Button();
@@ -78,24 +78,23 @@ namespace ForECC
             this.rTBoxTarget.Visible = false;
             this.rTBoxTarget.TextChanged += new System.EventHandler(this.rTBoxTarget_TextChanged);
             // 
-            // openFileDialog1
+            // menuFD_ECC
             // 
-            this.openFileDialog1.FileName = "openFileDialog1";
+            this.menuFD_ECC.FileName = "menuFD_ECC";
             // 
             // btnFileBrowse
             // 
             this.btnFileBrowse.Location = new System.Drawing.Point(144, 640);
             this.btnFileBrowse.Name = "btnFileBrowse";
-            this.btnFileBrowse.Size = new System.Drawing.Size(114, 35);
+            this.btnFileBrowse.Size = new System.Drawing.Size(150, 35);
             this.btnFileBrowse.TabIndex = 2;
-            this.btnFileBrowse.Text = "选择ashx文件";
+            this.btnFileBrowse.Text = "选择菜单文件生成菜单";
             this.btnFileBrowse.UseVisualStyleBackColor = true;
-            this.btnFileBrowse.Visible = false;
             this.btnFileBrowse.Click += new System.EventHandler(this.btnFileBrowse_Click);
             // 
             // btnFolderBrowse
             // 
-            this.btnFolderBrowse.Location = new System.Drawing.Point(288, 640);
+            this.btnFolderBrowse.Location = new System.Drawing.Point(364, 640);
             this.btnFolderBrowse.Name = "btnFolderBrowse";
             this.btnFolderBrowse.Size = new System.Drawing.Size(107, 35);
             this.btnFolderBrowse.TabIndex = 2;
@@ -303,7 +302,7 @@ namespace ForECC
 
         private System.Windows.Forms.RichTextBox rTBoxOrigin;
         private System.Windows.Forms.RichTextBox rTBoxTarget;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.OpenFileDialog menuFD_ECC;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.Button btnFileBrowse;
         private System.Windows.Forms.Button btnFolderBrowse;
