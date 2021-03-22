@@ -179,7 +179,7 @@
 
     edit: function (rec) {
         var me = this;
-        YZSoft.bpm.src.ux.FormManager.openFormApplication('98制品来客/客户来访提报管理部', rec.data.ID, 'Read', Ext.apply({
+        YZSoft.bpm.src.ux.FormManager.openFormApplication(this.FormService, rec.data.ID, 'Read', Ext.apply({
             sender: me,
             title: '查看',
             params: { tid: rec.data.ID },
@@ -215,7 +215,7 @@
     //},
 
     read: function (rec) {
-        YZSoft.bpm.src.ux.FormManager.openFormApplication('Demo/ProductionDevice/ProductionDevice', rec.data.id, 'Read', Ext.apply({
+        YZSoft.bpm.src.ux.FormManager.openFormApplication(this.FormService, rec.data.id, 'Read', Ext.apply({
             sender: this,
             title: Ext.String.format('设备属性 - {0}', rec.data.Name)
         }, this.dlgCfg));
