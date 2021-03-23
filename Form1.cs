@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -672,25 +673,30 @@ namespace ForECC
                 FileStream fsr = new FileStream(menuFD_ECC.FileName, FileMode.Open, FileAccess.Read);
                 using (StreamReader sr = new StreamReader(menuFD_ECC.FileName, Encoding.UTF8))//超级重要，必须以UTF-8格式打开
                 {
+                    bool bFirst = true;//用于标志是否是第一行
                     while ((line = sr.ReadLine()) != null)
                     {
+                        if (line.Trim().Length >= 2 && line.Trim().Substring(0, 2) == "//")
+                        {
+                            continue;
+                        }
                         //if (line.Contains("item.Attributes["))
                         //{
                         //    strContent = strContent + line + "/r/n";
 
                         //}
 
-            //            strSpec = @"            item = new JsonItem();
-            //rootItems.Add(item);
-            //                      ";
-            //            if (line.Contains(strSpec))
-            //            {
-            //                line = line.Replace(strSpec, @" }
-            //                                                }
-            //                                                new
-            //                                            {");
-            //                strContent = strContent + line + "\r\n ";
-            //            }
+                        //            strSpec = @"            item = new JsonItem();
+                        //rootItems.Add(item);
+                        //                      ";
+                        //            if (line.Contains(strSpec))
+                        //            {
+                        //                line = line.Replace(strSpec, @" }
+                        //                                                }
+                        //                                                new
+                        //                                            {");
+                        //                strContent = strContent + line + "\r\n ";
+                        //            }
 
                         //strSpec = "item = new JsonItem();";
                         //if (line.Contains(strSpec))
@@ -701,7 +707,18 @@ namespace ForECC
                         strSpec = "rootItems.Add(item);";
                         if (line.Contains(strSpec))
                         {
-                            line = "{";
+                            if (bFirst == true)
+                            {
+                                line = @" 
+                                    new{";
+                            }
+                            else
+                            {
+                                line = @" }
+                                    },
+                                    new{";
+                            }
+                            bFirst = false;
                             strContent = strContent + line + "\r\n ";
                         }
                         strSpec = "item.Attributes[\"text\"]";
@@ -714,7 +731,7 @@ namespace ForECC
                         strSpec = "item.Attributes[\"expanded\"] ";
                         if (line.Contains(strSpec))
                         {
-                            line = "expanded = true,";
+                            line = "expanded = false,";
                             strContent = strContent + line + "\r\n ";
                         }
                         strSpec = "children = new JsonItemCollection();";
@@ -726,7 +743,8 @@ namespace ForECC
                         strSpec = "children.Add(item);";
                         if (line.Contains(strSpec))
                         {
-                            line = "{";
+                            line = @"new 
+                             {";
                             strContent = strContent + line + "\r\n ";
                         }
 
@@ -749,28 +767,7 @@ namespace ForECC
                         {
                             line = line.Replace(strSpec, "xclass").Replace(";", "},").Replace("/", ".").Replace(".js", "");
                             strContent = strContent + line + "\r\n ";
-                            if (strContent.Contains("{"))
-                            {
-                                int iCountLeft = 0, iCountRight = 0;
-                                for (int i = 0; i < strContent.Length; i++)
-                                {
-                                    if (strContent[i] == '{')
-                                    {
-                                        iCountLeft++;
-                                    }
-                                    if (strContent[i] == '}')
-                                    {
-                                        iCountRight++;
-                                    }
-                                }
 
-                                if (iCountRight < iCountLeft)
-                                {
-                                    strContent = strContent + @"}
-                                }";
-                                }
-
-                            }
 
                         }
 
@@ -778,15 +775,39 @@ namespace ForECC
 
 
                     }
+
+                    if (strContent.Contains("{"))
+                    {
+                        int iCountLeft = 0, iCountRight = 0;
+                        for (int i = 0; i < strContent.Length; i++)
+                        {
+                            if (strContent[i] == '{')
+                            {
+                                iCountLeft++;
+                            }
+                            if (strContent[i] == '}')
+                            {
+                                iCountRight++;
+                            }
+                        }
+
+                        if (iCountRight < iCountLeft)
+                        {
+                            strContent = strContent + @"}
+                                }";
+                        }
+
+                    }
                     sr.Close();
                     fsr.Close();
                 }
 
-                string strOutFileName = Directory.GetCurrentDirectory() + "\\ProModuleTreeNew.ashx";
-                //if (!File.Exists(strOutFileName))
-                //{
-                //    File.Create(strOutFileName);
-                //}
+                string strOutFileName = Directory.GetCurrentDirectory() + "\\ProModuleTreeNew.txt";
+                if (!File.Exists(strOutFileName))
+                {
+                    FileStream fs = File.Create(strOutFileName);
+                    fs.Close();
+                }
                 FileStream fsw = new FileStream(strOutFileName, FileMode.Open, FileAccess.Write);
                 using (StreamWriter sw = new StreamWriter(fsw, Encoding.UTF8))
                 {
@@ -794,6 +815,16 @@ namespace ForECC
                     //sw.Write("");
                     sw.Close();
                     fsw.Close();
+                    txtBoxStatus.Text = "在" + strOutFileName + "生成文件";
+
+                    Process process = new Process();
+                    ProcessStartInfo processStartInfo = new ProcessStartInfo(strOutFileName);
+                    process.StartInfo = processStartInfo;
+                    process.StartInfo.UseShellExecute = true;
+                    process.Start();
+                    //System.Diagnostics.Process.Start(strOutFileName);
+
+                    File.OpenRead(strOutFileName);
 
                     WriteLog(strOutFileName, ltBoxStoreDataService);
                 }
@@ -876,31 +907,31 @@ namespace ForECC
                                     {
                                         //if (JsFile.Name.Contains("gonggao"))
 
-                                            //if (ckBoxConvertFolder.Checked==true)
-                                            //{
-                                            //strPatternFolder = cmbConvertFolder.SelectedText;//只有这个文件夹才替换
+                                        //if (ckBoxConvertFolder.Checked==true)
+                                        //{
+                                        //strPatternFolder = cmbConvertFolder.SelectedText;//只有这个文件夹才替换
 
-                                            //}
+                                        //}
 
-                                            //if (cmbConvertFolder.SelectedText!="ALL")
-                                            //{
-                                            //if (ECCFolder.Parent.Name == strPatternFolder)
-                                            //{
+                                        //if (cmbConvertFolder.SelectedText!="ALL")
+                                        //{
+                                        //if (ECCFolder.Parent.Name == strPatternFolder)
+                                        //{
 
-                                            //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
-
-
-                                            //}
-                                            //else
-                                            //{
-                                            //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
-                                            //    this.ltBoxModules.Items.Add(JsFile.Name);
-                                            //}
+                                        //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
 
 
+                                        //}
+                                        //else
+                                        //{
+                                        //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
+                                        //    this.ltBoxModules.Items.Add(JsFile.Name);
+                                        //}
 
-                                            //}
-                                            FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
+
+
+                                        //}
+                                        FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
                                     }
                                 }
                                 if (ECCFolder.Name == "StoreDataService")//如果找到StoreDataService文件夹循环处理ashx文件
@@ -912,13 +943,13 @@ namespace ForECC
                                             continue;//这个文件已经修改完成不需要遍历
                                         }
                                         //if (AshxFile.Name.Contains("gonggao"))
-                                            //if (ECCFolder.Parent.Name == strPatternFolder)
-                                            //{
-                                            //    FormatAshxFile(AshxFile.FullName, AshxFile.Name.Replace(".exclude", "").Replace(".ashx", ""), ECCFolder.Parent.Name);
-                                            //    this.ltBoxStoreDataService.Items.Add(AshxFile.Name);
-                                            //}
+                                        //if (ECCFolder.Parent.Name == strPatternFolder)
+                                        //{
+                                        //    FormatAshxFile(AshxFile.FullName, AshxFile.Name.Replace(".exclude", "").Replace(".ashx", ""), ECCFolder.Parent.Name);
+                                        //    this.ltBoxStoreDataService.Items.Add(AshxFile.Name);
+                                        //}
 
-                                            FormatAshxFile(AshxFile.FullName, AshxFile.Name.Replace(".exclude", "").Replace(".ashx", ""), ECCFolder.Parent.Name);
+                                        FormatAshxFile(AshxFile.FullName, AshxFile.Name.Replace(".exclude", "").Replace(".ashx", ""), ECCFolder.Parent.Name);
                                         //this.ltBoxStoreDataService.Items.Add(AshxFile.Name);
 
                                     }

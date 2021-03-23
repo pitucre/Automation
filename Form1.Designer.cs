@@ -53,6 +53,7 @@ namespace ForECC
             this.lblCountAshxFile = new System.Windows.Forms.Label();
             this.ltBoxNoExistTableName = new System.Windows.Forms.ListBox();
             this.lblNoExistTableName = new System.Windows.Forms.Label();
+            this.txtBoxStatus = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,9 +85,9 @@ namespace ForECC
             // 
             // btnFileBrowse
             // 
-            this.btnFileBrowse.Location = new System.Drawing.Point(144, 640);
+            this.btnFileBrowse.Location = new System.Drawing.Point(141, 617);
             this.btnFileBrowse.Name = "btnFileBrowse";
-            this.btnFileBrowse.Size = new System.Drawing.Size(150, 35);
+            this.btnFileBrowse.Size = new System.Drawing.Size(181, 35);
             this.btnFileBrowse.TabIndex = 2;
             this.btnFileBrowse.Text = "选择菜单文件生成菜单";
             this.btnFileBrowse.UseVisualStyleBackColor = true;
@@ -94,7 +95,7 @@ namespace ForECC
             // 
             // btnFolderBrowse
             // 
-            this.btnFolderBrowse.Location = new System.Drawing.Point(364, 640);
+            this.btnFolderBrowse.Location = new System.Drawing.Point(364, 655);
             this.btnFolderBrowse.Name = "btnFolderBrowse";
             this.btnFolderBrowse.Size = new System.Drawing.Size(107, 35);
             this.btnFolderBrowse.TabIndex = 2;
@@ -210,7 +211,7 @@ namespace ForECC
             // 
             // btnConvert
             // 
-            this.btnConvert.Location = new System.Drawing.Point(580, 640);
+            this.btnConvert.Location = new System.Drawing.Point(580, 655);
             this.btnConvert.Name = "btnConvert";
             this.btnConvert.Size = new System.Drawing.Size(99, 35);
             this.btnConvert.TabIndex = 1;
@@ -264,11 +265,19 @@ namespace ForECC
             this.lblNoExistTableName.TabIndex = 5;
             this.lblNoExistTableName.Text = "未发现表名的文件：";
             // 
+            // txtBoxStatus
+            // 
+            this.txtBoxStatus.Location = new System.Drawing.Point(364, 621);
+            this.txtBoxStatus.Name = "txtBoxStatus";
+            this.txtBoxStatus.Size = new System.Drawing.Size(315, 23);
+            this.txtBoxStatus.TabIndex = 10;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1370, 687);
+            this.Controls.Add(this.txtBoxStatus);
             this.Controls.Add(this.lblCountAshxFile);
             this.Controls.Add(this.lblCountJSFile);
             this.Controls.Add(this.btnConvert);
@@ -324,6 +333,7 @@ namespace ForECC
         private System.Windows.Forms.Label lblCountAshxFile;
         private System.Windows.Forms.ListBox ltBoxNoExistTableName;
         private System.Windows.Forms.Label lblNoExistTableName;
+        private System.Windows.Forms.TextBox txtBoxStatus;
     }
 }
 

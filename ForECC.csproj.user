@@ -5,4 +5,9 @@
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <None Update="BGSignetApplication10.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </None>
+  </ItemGroup>
 </Project>
