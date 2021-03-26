@@ -82,7 +82,8 @@ public class YZProductionDeviceServices : YZServiceHandler
 
         StringCollection warehouseCodes = new StringCollection();
 
-
+        string state = "";
+        string state2 = "";
         #endregion
 
         //获得查询条件
@@ -91,42 +92,7 @@ public class YZProductionDeviceServices : YZServiceHandler
         if (searchType == "QuickSearch")
         {
             //应用关键字过滤
-            if (!string.IsNullOrEmpty(keyword))
-                if (keyword == "已审批")
-                {
-                    keyword = "1";
-                    filter = queryProvider.CombinCond(filter, String.Format("(Flag={0})", queryProvider.EncodeText(keyword)));
-                    //filter = queryProvider.CombinCond(filter, String.Format(" and 客户名称 LIKE N'%{0}%' ", queryProvider.EncodeText(keyword)));
-                }
-                else if (keyword == "审批中")
-                {
-                    keyword = "0";
-                    filter = queryProvider.CombinCond(filter, String.Format("(Flag={0})", queryProvider.EncodeText(keyword)));
-
-
-                }
-                else if (keyword == "已拒绝")
-                {
-                    keyword = "2";
-                    filter = queryProvider.CombinCond(filter, String.Format("(Flag={0})", queryProvider.EncodeText(keyword)));
-
-
-                }
-                else if (keyword == "有效")
-                {
-                    keyword = "1";
-                    filter = queryProvider.CombinCond(filter, String.Format("(ExpFlag={0})", queryProvider.EncodeText(keyword)));
-                }
-                else if (keyword == "无效")
-                {
-                    keyword = "0";
-                    filter = queryProvider.CombinCond(filter, String.Format("(ExpFlag={0})", queryProvider.EncodeText(keyword)));
-                }
-                else
-                {
-
-                    filter = queryProvider.CombinCond(filter, String.Format("(LsCode LIKE N'%{0}%' or UserDept LIKE N'%{0}%' or UserName LIKE N'%{0}%' or convert(varchar(50),RequestDate,23) LIKE N'%{0}%')", queryProvider.EncodeText(keyword)));
-                }
+            //&&QuickSearch
         }
 
         //应用记录权限-只显示有权查看的记录

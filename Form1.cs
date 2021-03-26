@@ -11,7 +11,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.Xml;
+using ForECC.Helper;
 namespace ForECC
 {
 
@@ -29,7 +30,7 @@ namespace ForECC
         {
 
 
-
+            XmlHelper xml = new XmlHelper();
 
 
             //int counter = 0;
@@ -160,7 +161,7 @@ namespace ForECC
             if (iProcessNameStart < 0)
             {
                 WriteLog(strProcessName, ltBoxNoExistString, "未发现Window" + tag);
-                return;
+                //return;
             }
             else
             {
@@ -256,6 +257,193 @@ namespace ForECC
 
         }
 
+
+        private void MakeJSFile(string strOriginFilePath, string strProcessName, string strProcessGroup, string strProcessNameCN = "")
+        {
+
+            string strModelJSFile;//模板JS文件
+
+            strModelJSFile = Directory.GetCurrentDirectory() + "\\ITInResRequest.js";
+            File.Copy(strModelJSFile, strOriginFilePath);
+
+
+            string strNewContent = "";
+            string line = "";
+
+            using (StreamReader sr = new StreamReader(strModelJSFile))
+                while ((line = sr.ReadLine()) != null)
+                {
+                    if (line.Contains("&&ProcessName") || line.Contains("&&ProcessGroup"))
+                    {
+                        strNewContent = strNewContent + line.Replace("&&ProcessName", strProcessName.Replace(".js", "")).Replace("&&ProcessGroup", strProcessGroup) + "\r\n";
+                    }
+                    else if (line.Contains("&&PNameCN"))
+                    {
+                        strNewContent = strNewContent + line.Replace("&&PNameCN", txtBoxWindow.Text) + "\r\n";
+                    }
+                    else if (line.Contains("&&FormService"))
+                    {
+                        strNewContent = strNewContent + line.Replace("&&FormService", txtBoxForm.Text) + "\r\n";
+                    }
+                    //else if (line.Contains("//&&ItemList"))
+                    //{
+                    //    strNewContent = strNewContent + line.Replace("//&&ItemList", strPasteContent) + "\r\n";
+                    //}
+                    else
+                    {
+                        strNewContent = strNewContent + line + "\r\n";
+                    }
+
+                    //counter++;
+                }
+
+
+            using (StreamWriter sw = new StreamWriter(strOriginFilePath))
+            {
+                sw.Write(strNewContent);
+                sw.Close();
+
+                WriteLog(strProcessName + ".js", ltBoxModules);
+
+                //this.ltBoxModules.Items.Add(strProcessName + ".js");
+
+                //string logFileName = System.Environment.GetEnvironmentVariable("TEMP") + "\\" + Path.GetFileNameWithoutExtension(Application.ExecutablePath) + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+                //using (TextWriter logFile = TextWriter.Synchronized(File.AppendText(logFileName)))
+                //{
+                //    logFile.WriteLine(DateTime.Now + "\t" + strProcessName + ".js" + "\r\n");
+                //    logFile.Flush();
+                //    logFile.Close();
+                //}
+            }
+
+        }
+
+
+        private void FormatAspxFile(string strOriginFilePath, string strProcessName, string strProcessGroup, string strProcessNameCN = "")
+        {
+            if (strProcessName.Contains("backup"))//如果已经备份的文件不再处理
+            {
+                return;
+            }
+            #region 提取文件中的有用信息
+            int counter = 0;
+            string line;
+            string strContent = "";//文本文件内容
+
+            int iColumnsStart, iColumnsEnd;
+            int iProcessNameStart, iProcessNameEnd;//记录窗口位置
+            int iFormApplicationStart, iFormApplicationEnd;//记录表单Form位置
+            string strOpenPostWindow = "", strPasteContent = "", strContructItems = "";
+            string strOpenFormApplication = "";
+
+            //读取文件的内容并保存起来
+
+            ////创建XML文档类
+            //XmlDocument xmlDoc = new XmlDocument();
+            ////加载xml文件
+            //xmlDoc.Load(strOriginFilePath); //从指定的位置加载xml文档
+            ////获取根节点
+            //XmlElement xmlRoot = xmlDoc.DocumentElement; //DocumentElement获取文档的跟
+            ////遍历节点
+            //foreach (XmlNode node in xmlRoot.ChildNodes)
+            //{
+
+            //    //根据节点名称查找节点对象
+            //    Console.WriteLine(node["channelType"].InnerText + "\t" + node["tvChannel"].InnerText + "\t" + node["path"].InnerText);
+            //}
+
+            using (StreamReader file = new StreamReader(strOriginFilePath))
+            {
+                while ((line = file.ReadLine()) != null)
+                {
+                    //特殊注释删掉
+                    if (line.Trim().Length >= 4 && line.Trim().Substring(0, 4) == "<%--")
+                    {
+                        if (line.Contains("BGSignetApplication_M.Dept"))//去除审批对话框
+                        {
+
+                        }
+                    }
+                    else
+                    {
+                        if (line.Contains("<aspxform:XLabel ") && !line.Contains("BackColor", StringComparison.OrdinalIgnoreCase))//批量加背景
+                        {
+                            line = line.Replace("<aspxform:XLabel ", "<aspxform:XLabel BackColor=\"Transparent\"");
+                        }
+                        Console.WriteLine("注释语句删除");
+                        strContent = strContent + line;
+                    }
+
+                    //counter++;
+                }
+
+                file.Close();
+            }
+
+
+            //FileInfo fi = new FileInfo(strOriginFilePath);
+            //strOriginFilePath = strOriginFilePath.Replace("_data", "", StringComparison.OrdinalIgnoreCase); //如果名字里面有_data,把_data删除
+            //fi.MoveTo(strOriginFilePath + "_backup"); //文件重命名
+            //string strModelJSFile;//模板JS文件
+
+            //strModelJSFile = Directory.GetCurrentDirectory() + "\\ITInResRequest.js";
+            //File.Copy(strModelJSFile, strOriginFilePath);
+            ////File.Copy(strOriginFilePath, strModelJSFile);//
+
+
+            ////      file =
+            ////new System.IO.StreamReader(strNewFileName);
+
+            //string strNewContent = "";
+
+            //using (StreamReader sr = new StreamReader(strOriginFilePath))
+            //    while ((line = sr.ReadLine()) != null)
+            //    {
+            //        if (line.Contains("&&ProcessName") || line.Contains("&&ProcessGroup"))
+            //        {
+            //            strNewContent = strNewContent + line.Replace("&&ProcessName", strProcessName.Replace(".js", "")).Replace("&&ProcessGroup", strProcessGroup) + "\r\n";
+            //        }
+            //        else if (line.Contains("&&PNameCN"))
+            //        {
+            //            strNewContent = strNewContent + line.Replace("&&PNameCN", strOpenPostWindow) + "\r\n";
+            //        }
+            //        else if (line.Contains("&&FormService"))
+            //        {
+            //            strNewContent = strNewContent + line.Replace("&&FormService", strOpenFormApplication) + "\r\n";
+            //        }
+            //        else if (line.Contains("//&&ItemList"))
+            //        {
+            //            strNewContent = strNewContent + line.Replace("//&&ItemList", strPasteContent) + "\r\n";
+            //        }
+            //        else
+            //        {
+            //            strNewContent = strNewContent + line + "\r\n";
+            //        }
+
+            //        //counter++;
+            //    }
+
+
+            using (StreamWriter sw = new StreamWriter(strOriginFilePath))
+            {
+                sw.Write(strContent);
+                sw.Close();
+
+                WriteLog(strProcessName + ".aspx", ltBoxModules);
+
+                //this.ltBoxModules.Items.Add(strProcessName + ".js");
+
+                //string logFileName = System.Environment.GetEnvironmentVariable("TEMP") + "\\" + Path.GetFileNameWithoutExtension(Application.ExecutablePath) + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+                //using (TextWriter logFile = TextWriter.Synchronized(File.AppendText(logFileName)))
+                //{
+                //    logFile.WriteLine(DateTime.Now + "\t" + strProcessName + ".js" + "\r\n");
+                //    logFile.Flush();
+                //    logFile.Close();
+                //}
+            }
+
+        }
+
         private void WriteLog(string strProcessName, ListBox ltBoxLog, string strMsg = "")
         {
             ltBoxLog.Items.Add(strProcessName + strMsg);
@@ -290,9 +478,12 @@ namespace ForECC
             string strTableNameBk = "";//特殊规则查找的tablename
             string tag = "count(*) from ";
             string strLastItem = "";
+            int iQuickSearchStart, iQuickSearchEnd;
+            string strQuickSearch="";
 
             bool bFindTable = false;//判断是否发现表名
             bool bFindItem = false;//判断是否发现表名
+            bool bFindQuickSearch = false;//判断是否有快速搜索
             //读取文件的内容并保存起来
 
             using (StreamReader file = new StreamReader(strOriginFilePath))
@@ -421,6 +612,11 @@ namespace ForECC
                             //strTableName = line.Substring(iTableNameStart + tag.Length, iTableNameEnd - iTableNameStart - tag.Length-1);
                         }
 
+                        if (line.Contains("if (!string.IsNullOrEmpty(keyword))"))
+                        {
+                            bFindQuickSearch = true;
+                        }
+
                     }
 
 
@@ -529,6 +725,21 @@ namespace ForECC
             //提取文件中的有用信息
 
 
+            if (bFindQuickSearch == true)
+            {
+                iQuickSearchStart = strContent.IndexOf("if (!string.IsNullOrEmpty(keyword))");
+                tag = "queryProvider.EncodeText(keyword)));";
+                iQuickSearchEnd = strContent.LastIndexOf(tag);
+
+                strQuickSearch = strContent.Substring(iQuickSearchStart, iQuickSearchEnd + tag.Length - iQuickSearchStart);
+                if (strQuickSearch.Contains("else"))
+                {
+                    strQuickSearch = strQuickSearch + @"
+                    }";
+                }
+
+            }
+
 
             #endregion
 
@@ -570,6 +781,12 @@ namespace ForECC
                     {
                         strNewContent = strNewContent + line.Replace("//&&ItemAttribute", strPasteContent) + "\r\n ";
                     }
+                    else if (line.Contains("//&&QuickSearch"))
+                    {
+                        strNewContent = strNewContent + line.Replace("//&&QuickSearch", strQuickSearch) + "\r\n ";
+
+                    }
+
                     else
                     {
                         strNewContent = strNewContent + line + "\r\n ";//特别在回车换行符后面加了个空格，可以解决如 CheckCapBudgetMonth_SummaryInfo 这样后面多一个}的问题
@@ -887,8 +1104,8 @@ namespace ForECC
                     //C#遍历指定文件夹中的所有文件 
                     DirectoryInfo TheFolder = new DirectoryInfo(folderBD_ECC.SelectedPath);
 
-                    string strPatternFolder = "LOGProcess";//只有这个文件夹才替换
-                                                           //遍历文件夹
+                    string strPatternFolder = "HRProcess";//只有这个文件夹才替换
+                                                          //遍历文件夹
                     foreach (DirectoryInfo NextFolder in TheFolder.GetDirectories("*", SearchOption.AllDirectories))
                     {
                         if (NextFolder.Parent.Name == "YZModules")
@@ -905,33 +1122,33 @@ namespace ForECC
                                 {
                                     foreach (FileInfo JsFile in ECCFolder.GetFiles())
                                     {
-                                        //if (JsFile.Name.Contains("gonggao"))
+                                        //if (JsFile.Name.Contains("HRSysPostName"))
 
-                                        //if (ckBoxConvertFolder.Checked==true)
-                                        //{
-                                        //strPatternFolder = cmbConvertFolder.SelectedText;//只有这个文件夹才替换
+                                            //if (ckBoxConvertFolder.Checked==true)
+                                            //{
+                                            //strPatternFolder = cmbConvertFolder.SelectedText;//只有这个文件夹才替换
 
-                                        //}
+                                            //}
 
-                                        //if (cmbConvertFolder.SelectedText!="ALL")
-                                        //{
-                                        //if (ECCFolder.Parent.Name == strPatternFolder)
-                                        //{
+                                            //if (cmbConvertFolder.SelectedText!="ALL")
+                                            //{
+                                            //if (ECCFolder.Parent.Name == strPatternFolder)
+                                            //{
 
-                                        //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
-
-
-                                        //}
-                                        //else
-                                        //{
-                                        //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
-                                        //    this.ltBoxModules.Items.Add(JsFile.Name);
-                                        //}
+                                            //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
 
 
+                                            //}
+                                            //else
+                                            //{
+                                            //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
+                                            //    this.ltBoxModules.Items.Add(JsFile.Name);
+                                            //}
 
-                                        //}
-                                        FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
+
+
+                                            //}
+                                            FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
                                     }
                                 }
                                 if (ECCFolder.Name == "StoreDataService")//如果找到StoreDataService文件夹循环处理ashx文件
@@ -973,5 +1190,91 @@ namespace ForECC
 
             }
         }
+
+        private void btnFolderBrowseAspx_Click(object sender, EventArgs e)
+        {
+            if (folderBD_ECC.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (string.IsNullOrEmpty(folderBD_ECC.SelectedPath))
+                {
+                    MessageBox.Show("您没有选择任何文件夹！");
+                }
+                else
+                {
+                    bool bFind = false;
+                    //C#遍历指定文件夹中的所有文件 
+                    DirectoryInfo TheFolder = new DirectoryInfo(folderBD_ECC.SelectedPath);
+
+                    string strPatternFolder = "LOGProcess";//只有这个文件夹才替换
+                                                           //遍历文件夹
+                    foreach (DirectoryInfo NextFolder in TheFolder.GetDirectories("*", SearchOption.AllDirectories))
+                    {
+
+                        if (NextFolder.Name == "XForm")//如果找到 XForm,开始进行循环处理
+                        {
+                            TheFolder = new DirectoryInfo(NextFolder.FullName);
+                            foreach (DirectoryInfo ECCFolder in TheFolder.GetDirectories("*", SearchOption.AllDirectories))
+                            {
+
+                                foreach (FileInfo AspxFile in ECCFolder.GetFiles())
+                                {
+
+                                    FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                }
+
+
+                            }
+                            bFind = true;
+                            break;
+                        }
+
+                    }
+
+                    lblCountJSFile.Text = ltBoxModules.Items.Count.ToString() + "个";
+
+                    //lblCountAshxFile.Text = ltBoxStoreDataService.Items.Count.ToString() + "个";
+                    if (bFind == false)
+                    {
+                        MessageBox.Show("没有找到XForm文件夹，请确认是否选择正确!");
+                    }
+                }
+
+            }
+
+        }
+
+        private void btnModuleFolder_Click(object sender, EventArgs e)
+        {
+            if (folderBD_ECC.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                txtBoxTarget.Text = folderBD_ECC.SelectedPath;
+                if (!string.IsNullOrEmpty(txtBoxForm.Text))
+                {
+
+                }
+                else
+                {
+                    MessageBox.Show("Form不能为空！");
+                    return;
+                }
+
+                if (!string.IsNullOrEmpty(txtBoxWindow.Text))
+                {
+
+                }
+                else
+                {
+                    MessageBox.Show("Window的标题不能为空！");
+                    return;
+                }
+
+
+            }
+            else
+            {
+                MessageBox.Show("您没有选择认为文件夹！");
+            }
+        }
     }
 }
+#endregion
