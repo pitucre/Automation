@@ -321,7 +321,7 @@ namespace ForECC
 
         private void FormatAspxFile(string strOriginFilePath, string strProcessName, string strProcessGroup, string strProcessNameCN = "")
         {
-            if (strProcessName.Contains(".CompanyName"))//如果已经备份的文件不再处理
+            if (strProcessName.Contains("_backup"))//如果已经备份的文件不再处理
             {
                 return;
             }
@@ -358,11 +358,22 @@ namespace ForECC
             //    //根据节点名称查找节点对象
             //    Console.WriteLine(node["channelType"].InnerText + "\t" + node["tvChannel"].InnerText + "\t" + node["path"].InnerText);
             //}
+            if (!File.Exists(strOriginFilePath + "_backup"))
+            {
+                File.Copy(strOriginFilePath, strOriginFilePath + "_backup");//备份文件
+            }
 
             using (StreamReader file = new StreamReader(strOriginFilePath))
             {
                 while ((line = file.ReadLine()) != null)
                 {
+                    if (line.Contains("//Converted"))//如果文件已经更新过跳出逻辑
+                    {
+                        //ltBoxConverted.Items.Add(strProcessName + ".ashx文件已更新过！");
+                        WriteLog(strProcessName, ltBoxAspx, ".aspx文件已更新过！");
+                        file.Close();
+                        return;
+                    }
                     //特殊注释删掉
                     if (line.Trim().Length >= 4 && line.Trim().Substring(0, 4) == "<%--")
                     {
@@ -407,8 +418,8 @@ namespace ForECC
                 strTableName = strContent.Substring(iTableNameStart + strTag.Length, iTableNameEnd - iTableNameStart - strTag.Length);
 
                 //要增加的部门名字代码
-                string strAddContent = @"                   <td width=""67"" align=""right"" class=""Col0"" style=""BORDER - TOP: #c0bfc1 1px solid; BORDER-RIGHT: #c0bfc1 1px solid; BORDER-BOTTOM: #c0bfc1 1px solid; BORDER-LEFT: medium none"" colspan=""3"">
-                        < aspxform:XLabel id = ""XLabe66"" runat = ""server"" XDataBind = ""BPMCEDATA:{0}.CompanyName"" BorderColor = ""Transparent"" BackColor = ""Transparent"" ></ aspxform:XLabel >
+                string strAddContent = @"                   <td width=""67"" align=""right"" class=""Col0"" style=""BORDER-TOP: #c0bfc1 1px solid; BORDER-RIGHT: #c0bfc1 1px solid; BORDER-BOTTOM: #c0bfc1 1px solid; BORDER-LEFT: medium none"" colspan=""3"">
+                        <aspxform:XLabel id = ""XLabe66"" runat = ""server"" XDataBind = ""BPMCEDATA:{0}.CompanyName"" BorderColor = ""Transparent"" BackColor = ""Transparent"" ></ aspxform:XLabel >
              
                                  </ td > 
 ";
@@ -422,13 +433,13 @@ namespace ForECC
                     strFrontContent = strContent.Substring(0, iCompanyNameStart);
                     strBelowContent = strContent.Substring(iCompanyNameStart, strContent.Length - iCompanyNameStart);
 
-                    strNewContent = strFrontContent + "\r\n" + strAddContent + strBelowContent;
+                    strNewContent = "<%--converted--%>" + "\r\n" + strFrontContent + "\r\n" + strAddContent + strBelowContent;
 
                 }
                 else
                 {
                     //MessageBox.Show("没有发现字符串基本信息");
-                    WriteLog(strProcessName+".aspx", ltBoxNoExistString, "没有发现字符串基本信息");
+                    WriteLog(strProcessName + ".aspx", ltBoxNoExistString, "没有发现字符串基本信息");
 
                 }
             }
@@ -1240,8 +1251,8 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    //if (AspxFile.Name.Contains("BGSignetApplication10"))
-                                        FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    //if (AspxFile.Name.Contains("TireOutFactory10"))
+                                    FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
 
                                 }
