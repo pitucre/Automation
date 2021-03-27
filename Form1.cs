@@ -363,9 +363,15 @@ namespace ForECC
                 File.Copy(strOriginFilePath, strOriginFilePath + "_backup");//备份文件
             }
 
-            //FileStream fsr = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Read);
-            //using (StreamReader file = new StreamReader(strOriginFilePath, Encoding.UTF8))//超级重要，必须以UTF-8格式打开
-            using (StreamReader file = new StreamReader(strOriginFilePath))
+            //4种编码  
+            Encoding utf8 = Encoding.UTF8;
+            Encoding utf16 = Encoding.Unicode;
+            //Encoding gb = Encoding.GetEncoding("gbk");
+            //Encoding b5 = Encoding.GetEncoding("big5");
+
+            FileStream fsr = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Read);
+            using (StreamReader file = new StreamReader(strOriginFilePath, Encoding.Unicode))//超级重要，C#字符串默认是Unicode，必须以Unicode格式打开
+            //using (StreamReader file = new StreamReader(strOriginFilePath))
             {
                 while ((line = file.ReadLine()) != null)
                 {
@@ -373,9 +379,9 @@ namespace ForECC
                     {
                         //ltBoxConverted.Items.Add(strProcessName + ".ashx文件已更新过！");
                         WriteLog(strProcessName, ltBoxAspx, ".aspx文件已更新过！");
-                        
+
                         file.Close();
-                        //fsr.Close();
+                        fsr.Close();
                         return;
                     }
                     //特殊注释删掉
@@ -387,17 +393,18 @@ namespace ForECC
                     {
                         if (line.Contains("<aspxform:XLabel ") && !line.Contains("BackColor", StringComparison.OrdinalIgnoreCase))//批量加背景
                         {
-                            line = line.Replace("<aspxform:XLabel ", "<aspxform:XLabel BackColor=\"Transparent\" ");
+                            line = line.Replace("<aspxform:XLabel ", "<aspxform:XLabel BackColor=\"Transparent\" ").Trim();
+                            //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
                         }
                         Console.WriteLine("注释语句删除");
-                        strContent = strContent + line + "\r\n ";
+                        strContent = strContent + line + "&&&";
                     }
 
                     //counter++;
                 }
 
                 file.Close();
-                //fsr.Close();
+                fsr.Close();
             }
 
             string strPattern = @"<table style=""MARGIN.*?>[\s\S]*?</table>";
@@ -406,6 +413,8 @@ namespace ForECC
                 if (match.Value.Contains("审批意见"))
                 {
                     strContent = strContent.Replace(match.Value, "");
+                    //strContent = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(strContent)));
+
                     break;
                 }
 
@@ -428,6 +437,7 @@ namespace ForECC
                                  </td> 
 ";
                 strAddContent = string.Format(strAddContent, strTableName);
+                //strAddContent = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(strAddContent)));
 
                 iCompanyFlag = strContent.IndexOf("基本信息");
                 if (iCompanyFlag > 0)
@@ -437,8 +447,8 @@ namespace ForECC
                     strFrontContent = strContent.Substring(0, iCompanyNameStart);
                     strBelowContent = strContent.Substring(iCompanyNameStart, strContent.Length - iCompanyNameStart);
 
-                    strNewContent = "<%--converted--%>" + "\r\n " + strFrontContent + "\r\n " + strAddContent + strBelowContent;
-
+                    strNewContent = "<%--converted--%>" + "&&&" + strFrontContent + "&&&" + strAddContent + strBelowContent;
+                    //strNewContent = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(strNewContent)));
                 }
                 else
                 {
@@ -458,13 +468,20 @@ namespace ForECC
 
 
 
-            //FileStream fsw = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Write);
-            //using (StreamWriter sw = new StreamWriter(fsw, Encoding.UTF8))
-            using (StreamWriter sw = new StreamWriter(strOriginFilePath))
+            FileStream fsw = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Write);
+            using (StreamWriter sw = new StreamWriter(fsw, Encoding.Unicode))
+            //using (StreamWriter sw = new StreamWriter(strOriginFilePath))
             {
-                sw.Write(strNewContent);
+                //sw.Write(strNewContent);
+
+                foreach (string s in strNewContent.Split("&&&"))
+                {
+                    sw.WriteLine(s);
+
+                }
+                //sw.WriteAsync(strNewContent);
                 sw.Close();
-                //fsw.Close();
+                fsw.Close();
 
                 WriteLog(strProcessName + ".aspx", ltBoxAspx);
 
@@ -478,6 +495,8 @@ namespace ForECC
                 //    logFile.Close();
                 //}
             }
+
+
 
         }
 
@@ -1257,7 +1276,7 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    //if (AspxFile.Name.Contains("FIDepositApplication10"))
+                                    if (AspxFile.Name.Contains("FIDepositApplication10"))
                                         FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
 
