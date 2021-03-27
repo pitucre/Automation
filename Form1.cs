@@ -363,7 +363,9 @@ namespace ForECC
                 File.Copy(strOriginFilePath, strOriginFilePath + "_backup");//备份文件
             }
 
-            using (StreamReader file = new StreamReader(strOriginFilePath))
+            FileStream fsr = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Read);
+            using (StreamReader file = new StreamReader(strOriginFilePath, Encoding.UTF8))//超级重要，必须以UTF-8格式打开
+            //using (StreamReader file = new StreamReader(strOriginFilePath))
             {
                 while ((line = file.ReadLine()) != null)
                 {
@@ -386,7 +388,7 @@ namespace ForECC
                             line = line.Replace("<aspxform:XLabel ", "<aspxform:XLabel BackColor=\"Transparent\" ");
                         }
                         Console.WriteLine("注释语句删除");
-                        strContent = strContent + line + "\r\n";
+                        strContent = strContent + line + "\r\n ";
                     }
 
                     //counter++;
@@ -433,7 +435,7 @@ namespace ForECC
                     strFrontContent = strContent.Substring(0, iCompanyNameStart);
                     strBelowContent = strContent.Substring(iCompanyNameStart, strContent.Length - iCompanyNameStart);
 
-                    strNewContent = "<%--converted--%>" + "\r\n" + strFrontContent + "\r\n" + strAddContent + strBelowContent;
+                    strNewContent = "<%--converted--%>" + "\r\n " + strFrontContent + "\r\n " + strAddContent + strBelowContent;
 
                 }
                 else
@@ -454,8 +456,9 @@ namespace ForECC
 
 
 
-
-            using (StreamWriter sw = new StreamWriter(strOriginFilePath))
+            FileStream fsw = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Write);
+            using (StreamWriter sw = new StreamWriter(fsw, Encoding.UTF8))
+            //using (StreamWriter sw = new StreamWriter(strOriginFilePath))
             {
                 sw.Write(strNewContent);
                 sw.Close();
@@ -467,7 +470,7 @@ namespace ForECC
                 //string logFileName = System.Environment.GetEnvironmentVariable("TEMP") + "\\" + Path.GetFileNameWithoutExtension(Application.ExecutablePath) + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
                 //using (TextWriter logFile = TextWriter.Synchronized(File.AppendText(logFileName)))
                 //{
-                //    logFile.WriteLine(DateTime.Now + "\t" + strProcessName + ".js" + "\r\n");
+                //    logFile.WriteLine(DateTime.Now + "\t" + strProcessName + ".js" + "\r\n ");
                 //    logFile.Flush();
                 //    logFile.Close();
                 //}
