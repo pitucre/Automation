@@ -375,7 +375,7 @@ namespace ForECC
                             line = line.Replace("<aspxform:XLabel ", "<aspxform:XLabel BackColor=\"Transparent\" ");
                         }
                         Console.WriteLine("注释语句删除");
-                        strContent = strContent + line+"\r\n";
+                        strContent = strContent + line + "\r\n";
                     }
 
                     //counter++;
@@ -383,16 +383,16 @@ namespace ForECC
 
                 file.Close();
             }
-            
+
             string strPattern = @"<table style=""MARGIN.*?>[\s\S]*?</table>";
             //strPattern = @"<table.*?>[\s\S]*?<\/table>";
             foreach (Match match in Regex.Matches(strContent, strPattern))
                 if (match.Value.Contains("审批意见"))
                 {
-                    strContent= strContent.Replace(match.Value, "");
+                    strContent = strContent.Replace(match.Value, "");
                     break;
                 }
-                
+
             //Regex.Replace(strContent, strPattern,"");
 
             //strContent.Replace(strReplaceContent, "");
@@ -404,7 +404,7 @@ namespace ForECC
             {
                 iTableNameEnd = strContent.IndexOf(".", iTableNameStart);
 
-                strTableName = strContent.Substring(iTableNameStart+strTag.Length, iTableNameEnd - iTableNameStart - strTag.Length);
+                strTableName = strContent.Substring(iTableNameStart + strTag.Length, iTableNameEnd - iTableNameStart - strTag.Length);
 
                 //要增加的部门名字代码
                 string strAddContent = @"                   <td width=""67"" align=""right"" class=""Col0"" style=""BORDER - TOP: #c0bfc1 1px solid; BORDER-RIGHT: #c0bfc1 1px solid; BORDER-BOTTOM: #c0bfc1 1px solid; BORDER-LEFT: medium none"" colspan=""3"">
@@ -427,22 +427,22 @@ namespace ForECC
                 }
                 else
                 {
-                    MessageBox.Show("没有发现字符串基本信息");
-                    WriteLog(strProcessName, ltBoxNoExistString, "没有发现字符串基本信息");
+                    //MessageBox.Show("没有发现字符串基本信息");
+                    WriteLog(strProcessName+".aspx", ltBoxNoExistString, "没有发现字符串基本信息");
 
                 }
             }
             else
             {
-                MessageBox.Show("没有发现" + strTag);
-                WriteLog(strProcessName, ltBoxNoExistString, "没有发现" + strTag);
+                //MessageBox.Show("没有发现" + strTag);
+                WriteLog(strProcessName + ".aspx", ltBoxNoExistString, "没有发现" + strTag);
             }
 
 
             //正则查找
 
 
-            
+
 
             using (StreamWriter sw = new StreamWriter(strOriginFilePath))
             {
@@ -1240,11 +1240,10 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    if (AspxFile.Name.Contains("BGSignetApplication10"))
-                                    {
+                                    //if (AspxFile.Name.Contains("BGSignetApplication10"))
                                         FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
-                                    }
+
                                 }
 
 
