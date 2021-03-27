@@ -363,9 +363,9 @@ namespace ForECC
                 File.Copy(strOriginFilePath, strOriginFilePath + "_backup");//备份文件
             }
 
-            FileStream fsr = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Read);
-            using (StreamReader file = new StreamReader(strOriginFilePath, Encoding.UTF8))//超级重要，必须以UTF-8格式打开
-            //using (StreamReader file = new StreamReader(strOriginFilePath))
+            //FileStream fsr = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Read);
+            //using (StreamReader file = new StreamReader(strOriginFilePath, Encoding.UTF8))//超级重要，必须以UTF-8格式打开
+            using (StreamReader file = new StreamReader(strOriginFilePath))
             {
                 while ((line = file.ReadLine()) != null)
                 {
@@ -375,7 +375,7 @@ namespace ForECC
                         WriteLog(strProcessName, ltBoxAspx, ".aspx文件已更新过！");
                         
                         file.Close();
-                        fsr.Close();
+                        //fsr.Close();
                         return;
                     }
                     //特殊注释删掉
@@ -397,7 +397,7 @@ namespace ForECC
                 }
 
                 file.Close();
-                fsr.Close();
+                //fsr.Close();
             }
 
             string strPattern = @"<table style=""MARGIN.*?>[\s\S]*?</table>";
@@ -424,9 +424,8 @@ namespace ForECC
 
                 //要增加的部门名字代码
                 string strAddContent = @"                   <td width=""67"" align=""right"" class=""Col0"" style=""BORDER-TOP: #c0bfc1 1px solid; BORDER-RIGHT: #c0bfc1 1px solid; BORDER-BOTTOM: #c0bfc1 1px solid; BORDER-LEFT: medium none"" colspan=""3"">
-                        <aspxform:XLabel id = ""XLabe66"" runat = ""server"" XDataBind = ""BPMCEDATA:{0}.CompanyName"" BorderColor = ""Transparent"" BackColor = ""Transparent"" ></ aspxform:XLabel >
-             
-                                 </ td > 
+                        <aspxform:XLabel id=""XLabe66"" runat=""server"" XDataBind=""BPMCEDATA:{0}.CompanyName"" BorderColor=""Transparent"" BackColor=""Transparent""></aspxform:XLabel >             
+                                 </td> 
 ";
                 strAddContent = string.Format(strAddContent, strTableName);
 
@@ -459,13 +458,13 @@ namespace ForECC
 
 
 
-            FileStream fsw = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Write);
-            using (StreamWriter sw = new StreamWriter(fsw, Encoding.UTF8))
-            //using (StreamWriter sw = new StreamWriter(strOriginFilePath))
+            //FileStream fsw = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Write);
+            //using (StreamWriter sw = new StreamWriter(fsw, Encoding.UTF8))
+            using (StreamWriter sw = new StreamWriter(strOriginFilePath))
             {
                 sw.Write(strNewContent);
                 sw.Close();
-                fsw.Close();
+                //fsw.Close();
 
                 WriteLog(strProcessName + ".aspx", ltBoxAspx);
 
@@ -474,7 +473,7 @@ namespace ForECC
                 //string logFileName = System.Environment.GetEnvironmentVariable("TEMP") + "\\" + Path.GetFileNameWithoutExtension(Application.ExecutablePath) + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
                 //using (TextWriter logFile = TextWriter.Synchronized(File.AppendText(logFileName)))
                 //{
-                //    logFile.WriteLine(DateTime.Now + "\t" + strProcessName + ".js" + "\r\n ");
+                //    logFile.WriteLine(DateTime.Now + "\t" + strProcessName + ".js" + "\r\n");
                 //    logFile.Flush();
                 //    logFile.Close();
                 //}
@@ -1258,8 +1257,8 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    //if (AspxFile.Name.Contains("TireOutFactory10"))
-                                    FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    //if (AspxFile.Name.Contains("FIDepositApplication10"))
+                                        FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
 
                                 }

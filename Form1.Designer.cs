@@ -31,11 +31,13 @@ namespace ForECC
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tPAuto = new System.Windows.Forms.TabPage();
+            this.ltBoxLogAll = new System.Windows.Forms.ListBox();
             this.lblCountAspx = new System.Windows.Forms.Label();
             this.lblCountAshxFile = new System.Windows.Forms.Label();
             this.lblCountJSFile = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.txtBoxStatus = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.ltBoxNoExistTableName = new System.Windows.Forms.ListBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -72,8 +74,6 @@ namespace ForECC
             this.menuFD_ECC = new System.Windows.Forms.OpenFileDialog();
             this.folderBD_ECC = new System.Windows.Forms.FolderBrowserDialog();
             this.folderBrowserDialog2 = new System.Windows.Forms.FolderBrowserDialog();
-            this.ltBoxLogAll = new System.Windows.Forms.ListBox();
-            this.label11 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tPAuto.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -128,6 +128,15 @@ namespace ForECC
             this.tPAuto.Text = "自动转换";
             this.tPAuto.UseVisualStyleBackColor = true;
             // 
+            // ltBoxLogAll
+            // 
+            this.ltBoxLogAll.FormattingEnabled = true;
+            this.ltBoxLogAll.ItemHeight = 17;
+            this.ltBoxLogAll.Location = new System.Drawing.Point(1145, 72);
+            this.ltBoxLogAll.Name = "ltBoxLogAll";
+            this.ltBoxLogAll.Size = new System.Drawing.Size(207, 497);
+            this.ltBoxLogAll.TabIndex = 14;
+            // 
             // lblCountAspx
             // 
             this.lblCountAspx.AutoSize = true;
@@ -166,6 +175,15 @@ namespace ForECC
             this.txtBoxStatus.Name = "txtBoxStatus";
             this.txtBoxStatus.Size = new System.Drawing.Size(315, 23);
             this.txtBoxStatus.TabIndex = 10;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(1145, 34);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(63, 17);
+            this.label11.TabIndex = 5;
+            this.label11.Text = "所有log：";
             // 
             // label7
             // 
@@ -488,24 +506,6 @@ namespace ForECC
             // menuFD_ECC
             // 
             this.menuFD_ECC.FileName = "menuFD_ECC";
-            // 
-            // ltBoxLogAll
-            // 
-            this.ltBoxLogAll.FormattingEnabled = true;
-            this.ltBoxLogAll.ItemHeight = 17;
-            this.ltBoxLogAll.Location = new System.Drawing.Point(1145, 72);
-            this.ltBoxLogAll.Name = "ltBoxLogAll";
-            this.ltBoxLogAll.Size = new System.Drawing.Size(207, 497);
-            this.ltBoxLogAll.TabIndex = 14;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(1145, 34);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(63, 17);
-            this.label11.TabIndex = 5;
-            this.label11.Text = "所有log：";
             // 
             // Form1
             // 
