@@ -31,6 +31,7 @@ namespace ForECC
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tPAuto = new System.Windows.Forms.TabPage();
+            this.lblCountAspx = new System.Windows.Forms.Label();
             this.lblCountAshxFile = new System.Windows.Forms.Label();
             this.lblCountJSFile = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -48,8 +49,10 @@ namespace ForECC
             this.label3 = new System.Windows.Forms.Label();
             this.ltBoxConverted = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.ltBoxStoreDataService = new System.Windows.Forms.ListBox();
+            this.ltBoxAspx = new System.Windows.Forms.ListBox();
             this.ltBoxModules = new System.Windows.Forms.ListBox();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -69,6 +72,8 @@ namespace ForECC
             this.menuFD_ECC = new System.Windows.Forms.OpenFileDialog();
             this.folderBD_ECC = new System.Windows.Forms.FolderBrowserDialog();
             this.folderBrowserDialog2 = new System.Windows.Forms.FolderBrowserDialog();
+            this.ltBoxLogAll = new System.Windows.Forms.ListBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tPAuto.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -87,10 +92,13 @@ namespace ForECC
             // 
             // tPAuto
             // 
+            this.tPAuto.Controls.Add(this.ltBoxLogAll);
+            this.tPAuto.Controls.Add(this.lblCountAspx);
             this.tPAuto.Controls.Add(this.lblCountAshxFile);
             this.tPAuto.Controls.Add(this.lblCountJSFile);
             this.tPAuto.Controls.Add(this.label8);
             this.tPAuto.Controls.Add(this.txtBoxStatus);
+            this.tPAuto.Controls.Add(this.label11);
             this.tPAuto.Controls.Add(this.label7);
             this.tPAuto.Controls.Add(this.ltBoxNoExistTableName);
             this.tPAuto.Controls.Add(this.label6);
@@ -102,8 +110,10 @@ namespace ForECC
             this.tPAuto.Controls.Add(this.label3);
             this.tPAuto.Controls.Add(this.ltBoxConverted);
             this.tPAuto.Controls.Add(this.label2);
+            this.tPAuto.Controls.Add(this.label10);
             this.tPAuto.Controls.Add(this.label1);
             this.tPAuto.Controls.Add(this.ltBoxStoreDataService);
+            this.tPAuto.Controls.Add(this.ltBoxAspx);
             this.tPAuto.Controls.Add(this.ltBoxModules);
             this.tPAuto.Controls.Add(this.button3);
             this.tPAuto.Controls.Add(this.button2);
@@ -118,23 +128,29 @@ namespace ForECC
             this.tPAuto.Text = "自动转换";
             this.tPAuto.UseVisualStyleBackColor = true;
             // 
+            // lblCountAspx
+            // 
+            this.lblCountAspx.AutoSize = true;
+            this.lblCountAspx.Location = new System.Drawing.Point(149, 273);
+            this.lblCountAspx.Name = "lblCountAspx";
+            this.lblCountAspx.Size = new System.Drawing.Size(0, 17);
+            this.lblCountAspx.TabIndex = 13;
+            // 
             // lblCountAshxFile
             // 
             this.lblCountAshxFile.AutoSize = true;
             this.lblCountAshxFile.Location = new System.Drawing.Point(449, 34);
             this.lblCountAshxFile.Name = "lblCountAshxFile";
-            this.lblCountAshxFile.Size = new System.Drawing.Size(50, 17);
+            this.lblCountAshxFile.Size = new System.Drawing.Size(0, 17);
             this.lblCountAshxFile.TabIndex = 12;
-            this.lblCountAshxFile.Text = "label11";
             // 
             // lblCountJSFile
             // 
             this.lblCountJSFile.AutoSize = true;
             this.lblCountJSFile.Location = new System.Drawing.Point(165, 34);
             this.lblCountJSFile.Name = "lblCountJSFile";
-            this.lblCountJSFile.Size = new System.Drawing.Size(50, 17);
+            this.lblCountJSFile.Size = new System.Drawing.Size(0, 17);
             this.lblCountJSFile.TabIndex = 11;
-            this.lblCountJSFile.Text = "label10";
             // 
             // label8
             // 
@@ -154,7 +170,7 @@ namespace ForECC
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(1103, 34);
+            this.label7.Location = new System.Drawing.Point(831, 34);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(116, 17);
             this.label7.TabIndex = 5;
@@ -164,7 +180,7 @@ namespace ForECC
             // 
             this.ltBoxNoExistTableName.FormattingEnabled = true;
             this.ltBoxNoExistTableName.ItemHeight = 17;
-            this.ltBoxNoExistTableName.Location = new System.Drawing.Point(1103, 71);
+            this.ltBoxNoExistTableName.Location = new System.Drawing.Point(840, 71);
             this.ltBoxNoExistTableName.Margin = new System.Windows.Forms.Padding(2);
             this.ltBoxNoExistTableName.Name = "ltBoxNoExistTableName";
             this.ltBoxNoExistTableName.Size = new System.Drawing.Size(256, 497);
@@ -229,7 +245,7 @@ namespace ForECC
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(843, 34);
+            this.label4.Location = new System.Drawing.Point(580, 34);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(140, 17);
             this.label4.TabIndex = 5;
@@ -239,7 +255,7 @@ namespace ForECC
             // 
             this.ltBoxNoExistString.FormattingEnabled = true;
             this.ltBoxNoExistString.ItemHeight = 17;
-            this.ltBoxNoExistString.Location = new System.Drawing.Point(843, 71);
+            this.ltBoxNoExistString.Location = new System.Drawing.Point(581, 71);
             this.ltBoxNoExistString.Margin = new System.Windows.Forms.Padding(2);
             this.ltBoxNoExistString.Name = "ltBoxNoExistString";
             this.ltBoxNoExistString.Size = new System.Drawing.Size(256, 497);
@@ -248,7 +264,7 @@ namespace ForECC
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(583, 34);
+            this.label3.Location = new System.Drawing.Point(311, 273);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(104, 17);
             this.label3.TabIndex = 5;
@@ -258,10 +274,10 @@ namespace ForECC
             // 
             this.ltBoxConverted.FormattingEnabled = true;
             this.ltBoxConverted.ItemHeight = 17;
-            this.ltBoxConverted.Location = new System.Drawing.Point(583, 71);
+            this.ltBoxConverted.Location = new System.Drawing.Point(312, 309);
             this.ltBoxConverted.Margin = new System.Windows.Forms.Padding(2);
             this.ltBoxConverted.Name = "ltBoxConverted";
-            this.ltBoxConverted.Size = new System.Drawing.Size(256, 497);
+            this.ltBoxConverted.Size = new System.Drawing.Size(256, 259);
             this.ltBoxConverted.TabIndex = 4;
             // 
             // label2
@@ -272,6 +288,15 @@ namespace ForECC
             this.label2.Size = new System.Drawing.Size(131, 17);
             this.label2.TabIndex = 5;
             this.label2.Text = "更新的Ashx文件名单：";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(19, 273);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(131, 17);
+            this.label10.TabIndex = 5;
+            this.label10.Text = "更新的aspx文件名单：";
             // 
             // label1
             // 
@@ -289,8 +314,18 @@ namespace ForECC
             this.ltBoxStoreDataService.Location = new System.Drawing.Point(311, 71);
             this.ltBoxStoreDataService.Margin = new System.Windows.Forms.Padding(2);
             this.ltBoxStoreDataService.Name = "ltBoxStoreDataService";
-            this.ltBoxStoreDataService.Size = new System.Drawing.Size(256, 497);
+            this.ltBoxStoreDataService.Size = new System.Drawing.Size(256, 174);
             this.ltBoxStoreDataService.TabIndex = 4;
+            // 
+            // ltBoxAspx
+            // 
+            this.ltBoxAspx.FormattingEnabled = true;
+            this.ltBoxAspx.ItemHeight = 17;
+            this.ltBoxAspx.Location = new System.Drawing.Point(19, 311);
+            this.ltBoxAspx.Margin = new System.Windows.Forms.Padding(2);
+            this.ltBoxAspx.Name = "ltBoxAspx";
+            this.ltBoxAspx.Size = new System.Drawing.Size(256, 259);
+            this.ltBoxAspx.TabIndex = 4;
             // 
             // ltBoxModules
             // 
@@ -299,7 +334,7 @@ namespace ForECC
             this.ltBoxModules.Location = new System.Drawing.Point(19, 72);
             this.ltBoxModules.Margin = new System.Windows.Forms.Padding(2);
             this.ltBoxModules.Name = "ltBoxModules";
-            this.ltBoxModules.Size = new System.Drawing.Size(256, 497);
+            this.ltBoxModules.Size = new System.Drawing.Size(256, 174);
             this.ltBoxModules.TabIndex = 4;
             // 
             // button3
@@ -454,6 +489,24 @@ namespace ForECC
             // 
             this.menuFD_ECC.FileName = "menuFD_ECC";
             // 
+            // ltBoxLogAll
+            // 
+            this.ltBoxLogAll.FormattingEnabled = true;
+            this.ltBoxLogAll.ItemHeight = 17;
+            this.ltBoxLogAll.Location = new System.Drawing.Point(1145, 72);
+            this.ltBoxLogAll.Name = "ltBoxLogAll";
+            this.ltBoxLogAll.Size = new System.Drawing.Size(207, 497);
+            this.ltBoxLogAll.TabIndex = 14;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(1145, 34);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(63, 17);
+            this.label11.TabIndex = 5;
+            this.label11.Text = "所有log：";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
@@ -516,6 +569,11 @@ namespace ForECC
         private System.Windows.Forms.Label lblCountJSFile;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button btnModuleFolder;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ListBox ltBoxAspx;
+        private System.Windows.Forms.Label lblCountAspx;
+        private System.Windows.Forms.ListBox ltBoxLogAll;
+        private System.Windows.Forms.Label label11;
     }
 }
 

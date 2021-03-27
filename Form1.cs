@@ -442,55 +442,14 @@ namespace ForECC
             //正则查找
 
 
-            //FileInfo fi = new FileInfo(strOriginFilePath);
-            //strOriginFilePath = strOriginFilePath.Replace("_data", "", StringComparison.OrdinalIgnoreCase); //如果名字里面有_data,把_data删除
-            //fi.MoveTo(strOriginFilePath + "_backup"); //文件重命名
-            //string strModelJSFile;//模板JS文件
-
-            //strModelJSFile = Directory.GetCurrentDirectory() + "\\ITInResRequest.js";
-            //File.Copy(strModelJSFile, strOriginFilePath);
-            ////File.Copy(strOriginFilePath, strModelJSFile);//
-
-
-            ////      file =
-            ////new System.IO.StreamReader(strNewFileName);
-
-            //string strNewContent = "";
-
-            //using (StreamReader sr = new StreamReader(strOriginFilePath))
-            //    while ((line = sr.ReadLine()) != null)
-            //    {
-            //        if (line.Contains("&&ProcessName") || line.Contains("&&ProcessGroup"))
-            //        {
-            //            strNewContent = strNewContent + line.Replace("&&ProcessName", strProcessName.Replace(".js", "")).Replace("&&ProcessGroup", strProcessGroup) + "\r\n";
-            //        }
-            //        else if (line.Contains("&&PNameCN"))
-            //        {
-            //            strNewContent = strNewContent + line.Replace("&&PNameCN", strOpenPostWindow) + "\r\n";
-            //        }
-            //        else if (line.Contains("&&FormService"))
-            //        {
-            //            strNewContent = strNewContent + line.Replace("&&FormService", strOpenFormApplication) + "\r\n";
-            //        }
-            //        else if (line.Contains("//&&ItemList"))
-            //        {
-            //            strNewContent = strNewContent + line.Replace("//&&ItemList", strPasteContent) + "\r\n";
-            //        }
-            //        else
-            //        {
-            //            strNewContent = strNewContent + line + "\r\n";
-            //        }
-
-            //        //counter++;
-            //    }
-
+            
 
             using (StreamWriter sw = new StreamWriter(strOriginFilePath))
             {
                 sw.Write(strNewContent);
                 sw.Close();
 
-                WriteLog(strProcessName + ".aspx", ltBoxModules);
+                WriteLog(strProcessName + ".aspx", ltBoxAspx);
 
                 //this.ltBoxModules.Items.Add(strProcessName + ".js");
 
@@ -508,6 +467,8 @@ namespace ForECC
         private void WriteLog(string strProcessName, ListBox ltBoxLog, string strMsg = "")
         {
             ltBoxLog.Items.Add(strProcessName + strMsg);
+
+            ltBoxLogAll.Items.Add(strProcessName + strMsg);
 
             string logFileName = System.Environment.GetEnvironmentVariable("TEMP") + "\\" + Path.GetFileNameWithoutExtension(Application.ExecutablePath) + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
             using (TextWriter logFile = TextWriter.Synchronized(File.AppendText(logFileName)))
@@ -1294,7 +1255,7 @@ namespace ForECC
 
                     }
 
-                    lblCountJSFile.Text = ltBoxModules.Items.Count.ToString() + "个";
+                    lblCountAspx.Text = ltBoxAspx.Items.Count.ToString() + "个";
 
                     //lblCountAshxFile.Text = ltBoxStoreDataService.Items.Count.ToString() + "个";
                     if (bFind == false)
