@@ -373,7 +373,9 @@ namespace ForECC
                     {
                         //ltBoxConverted.Items.Add(strProcessName + ".ashx文件已更新过！");
                         WriteLog(strProcessName, ltBoxAspx, ".aspx文件已更新过！");
+                        
                         file.Close();
+                        fsr.Close();
                         return;
                     }
                     //特殊注释删掉
@@ -395,6 +397,7 @@ namespace ForECC
                 }
 
                 file.Close();
+                fsr.Close();
             }
 
             string strPattern = @"<table style=""MARGIN.*?>[\s\S]*?</table>";
@@ -462,6 +465,7 @@ namespace ForECC
             {
                 sw.Write(strNewContent);
                 sw.Close();
+                fsw.Close();
 
                 WriteLog(strProcessName + ".aspx", ltBoxAspx);
 
