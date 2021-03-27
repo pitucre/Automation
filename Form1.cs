@@ -321,20 +321,27 @@ namespace ForECC
 
         private void FormatAspxFile(string strOriginFilePath, string strProcessName, string strProcessGroup, string strProcessNameCN = "")
         {
-            if (strProcessName.Contains("backup"))//如果已经备份的文件不再处理
+            if (strProcessName.Contains(".CompanyName"))//如果已经备份的文件不再处理
             {
                 return;
             }
             #region 提取文件中的有用信息
-            int counter = 0;
+            int iTableNameStart, iTableNameEnd;//数据库表的位置
+            string strTableName;//数据库表名
             string line;
             string strContent = "";//文本文件内容
 
-            int iColumnsStart, iColumnsEnd;
-            int iProcessNameStart, iProcessNameEnd;//记录窗口位置
-            int iFormApplicationStart, iFormApplicationEnd;//记录表单Form位置
-            string strOpenPostWindow = "", strPasteContent = "", strContructItems = "";
-            string strOpenFormApplication = "";
+            int iCompanyFlag;
+            int iCompanyNameStart, iCompanyNameEnd;//记录Company出现的位置
+
+            string strReplaceContent = "";
+
+            string strFrontContent = "";//上半部分内容
+            string strBelowContent = "";//下班部分内容
+
+            string strNewContent = "";//用于存储新内容
+
+            string strTag = "";
 
             //读取文件的内容并保存起来
 
@@ -359,19 +366,16 @@ namespace ForECC
                     //特殊注释删掉
                     if (line.Trim().Length >= 4 && line.Trim().Substring(0, 4) == "<%--")
                     {
-                        if (line.Contains("BGSignetApplication_M.Dept"))//去除审批对话框
-                        {
 
-                        }
                     }
                     else
                     {
                         if (line.Contains("<aspxform:XLabel ") && !line.Contains("BackColor", StringComparison.OrdinalIgnoreCase))//批量加背景
                         {
-                            line = line.Replace("<aspxform:XLabel ", "<aspxform:XLabel BackColor=\"Transparent\"");
+                            line = line.Replace("<aspxform:XLabel ", "<aspxform:XLabel BackColor=\"Transparent\" ");
                         }
                         Console.WriteLine("注释语句删除");
-                        strContent = strContent + line;
+                        strContent = strContent + line+"\r\n";
                     }
 
                     //counter++;
@@ -379,6 +383,63 @@ namespace ForECC
 
                 file.Close();
             }
+            
+            string strPattern = @"<table style=""MARGIN.*?>[\s\S]*?</table>";
+            //strPattern = @"<table.*?>[\s\S]*?<\/table>";
+            foreach (Match match in Regex.Matches(strContent, strPattern))
+                if (match.Value.Contains("审批意见"))
+                {
+                    strContent= strContent.Replace(match.Value, "");
+                    break;
+                }
+                
+            //Regex.Replace(strContent, strPattern,"");
+
+            //strContent.Replace(strReplaceContent, "");
+
+            strTag = "BPMCEDATA:";
+            iTableNameStart = strContent.IndexOf(strTag);
+
+            if (iTableNameStart > 0)
+            {
+                iTableNameEnd = strContent.IndexOf(".", iTableNameStart);
+
+                strTableName = strContent.Substring(iTableNameStart+strTag.Length, iTableNameEnd - iTableNameStart - strTag.Length);
+
+                //要增加的部门名字代码
+                string strAddContent = @"                   <td width=""67"" align=""right"" class=""Col0"" style=""BORDER - TOP: #c0bfc1 1px solid; BORDER-RIGHT: #c0bfc1 1px solid; BORDER-BOTTOM: #c0bfc1 1px solid; BORDER-LEFT: medium none"" colspan=""3"">
+                        < aspxform:XLabel id = ""XLabe66"" runat = ""server"" XDataBind = ""BPMCEDATA:{0}.CompanyName"" BorderColor = ""Transparent"" BackColor = ""Transparent"" ></ aspxform:XLabel >
+             
+                                 </ td > 
+";
+                strAddContent = string.Format(strAddContent, strTableName);
+
+                iCompanyFlag = strContent.IndexOf("基本信息");
+                if (iCompanyFlag > 0)
+                {
+                    iCompanyNameStart = strContent.IndexOf("</tr", iCompanyFlag);
+
+                    strFrontContent = strContent.Substring(0, iCompanyNameStart);
+                    strBelowContent = strContent.Substring(iCompanyNameStart, strContent.Length - iCompanyNameStart);
+
+                    strNewContent = strFrontContent + "\r\n" + strAddContent + strBelowContent;
+
+                }
+                else
+                {
+                    MessageBox.Show("没有发现字符串基本信息");
+                    WriteLog(strProcessName, ltBoxNoExistString, "没有发现字符串基本信息");
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("没有发现" + strTag);
+                WriteLog(strProcessName, ltBoxNoExistString, "没有发现" + strTag);
+            }
+
+
+            //正则查找
 
 
             //FileInfo fi = new FileInfo(strOriginFilePath);
@@ -426,7 +487,7 @@ namespace ForECC
 
             using (StreamWriter sw = new StreamWriter(strOriginFilePath))
             {
-                sw.Write(strContent);
+                sw.Write(strNewContent);
                 sw.Close();
 
                 WriteLog(strProcessName + ".aspx", ltBoxModules);
@@ -479,7 +540,7 @@ namespace ForECC
             string tag = "count(*) from ";
             string strLastItem = "";
             int iQuickSearchStart, iQuickSearchEnd;
-            string strQuickSearch="";
+            string strQuickSearch = "";
 
             bool bFindTable = false;//判断是否发现表名
             bool bFindItem = false;//判断是否发现表名
@@ -1124,31 +1185,31 @@ namespace ForECC
                                     {
                                         //if (JsFile.Name.Contains("HRSysPostName"))
 
-                                            //if (ckBoxConvertFolder.Checked==true)
-                                            //{
-                                            //strPatternFolder = cmbConvertFolder.SelectedText;//只有这个文件夹才替换
+                                        //if (ckBoxConvertFolder.Checked==true)
+                                        //{
+                                        //strPatternFolder = cmbConvertFolder.SelectedText;//只有这个文件夹才替换
 
-                                            //}
+                                        //}
 
-                                            //if (cmbConvertFolder.SelectedText!="ALL")
-                                            //{
-                                            //if (ECCFolder.Parent.Name == strPatternFolder)
-                                            //{
+                                        //if (cmbConvertFolder.SelectedText!="ALL")
+                                        //{
+                                        //if (ECCFolder.Parent.Name == strPatternFolder)
+                                        //{
 
-                                            //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
-
-
-                                            //}
-                                            //else
-                                            //{
-                                            //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
-                                            //    this.ltBoxModules.Items.Add(JsFile.Name);
-                                            //}
+                                        //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
 
 
+                                        //}
+                                        //else
+                                        //{
+                                        //    FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
+                                        //    this.ltBoxModules.Items.Add(JsFile.Name);
+                                        //}
 
-                                            //}
-                                            FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
+
+
+                                        //}
+                                        FormatJSFile(JsFile.FullName, JsFile.Name.Replace(".js", ""), ECCFolder.Parent.Name);
                                     }
                                 }
                                 if (ECCFolder.Name == "StoreDataService")//如果找到StoreDataService文件夹循环处理ashx文件
@@ -1218,8 +1279,11 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
+                                    if (AspxFile.Name.Contains("BGSignetApplication10"))
+                                    {
+                                        FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
-                                    FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    }
                                 }
 
 
