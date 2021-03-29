@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using ForECC.Helper;
+
 namespace ForECC
 {
 
@@ -343,6 +344,7 @@ namespace ForECC
 
             string strTag = "";
 
+            FileEncoding fEncoding = new FileEncoding();
             //读取文件的内容并保存起来
 
             ////创建XML文档类
@@ -363,18 +365,22 @@ namespace ForECC
                 File.Copy(strOriginFilePath, strOriginFilePath + "_backup");//备份文件
             }
 
+
             //4种编码  
             Encoding utf8 = Encoding.UTF8;
             Encoding utf16 = Encoding.Unicode;
             //Encoding gb = Encoding.GetEncoding("gbk");
             //Encoding b5 = Encoding.GetEncoding("big5");
 
+            Encoding strFileEncoding;
+            strFileEncoding = FileEncoding.GetEncoding(strOriginFilePath);
             FileStream fsr = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Read);
-            using (StreamReader file = new StreamReader(strOriginFilePath, Encoding.Unicode))//超级重要，C#字符串默认是Unicode，必须以Unicode格式打开
+            using (StreamReader file = new StreamReader(strOriginFilePath, strFileEncoding))//超级重要，C#字符串默认是Unicode，必须以Unicode格式打开
             //using (StreamReader file = new StreamReader(strOriginFilePath))
             {
                 while ((line = file.ReadLine()) != null)
                 {
+                    //line = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
                     if (line.Contains("//Converted"))//如果文件已经更新过跳出逻辑
                     {
                         //ltBoxConverted.Items.Add(strProcessName + ".ashx文件已更新过！");
@@ -397,7 +403,7 @@ namespace ForECC
                             //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
                         }
                         Console.WriteLine("注释语句删除");
-                        strContent = strContent + line + "&&&";
+                        strContent = strContent + line + Environment.NewLine;
                     }
 
                     //counter++;
@@ -432,10 +438,11 @@ namespace ForECC
                 strTableName = strContent.Substring(iTableNameStart + strTag.Length, iTableNameEnd - iTableNameStart - strTag.Length);
 
                 //要增加的部门名字代码
-                string strAddContent = @"                   <td width=""67"" align=""right"" class=""Col0"" style=""BORDER-TOP: #c0bfc1 1px solid; BORDER-RIGHT: #c0bfc1 1px solid; BORDER-BOTTOM: #c0bfc1 1px solid; BORDER-LEFT: medium none"" colspan=""3"">
+                string strAddContent = @"                   <td  class=""Col0"">
                         <aspxform:XLabel id=""XLabe66"" runat=""server"" XDataBind=""BPMCEDATA:{0}.CompanyName"" BorderColor=""Transparent"" BackColor=""Transparent""></aspxform:XLabel >             
                                  </td> 
 ";
+
                 strAddContent = string.Format(strAddContent, strTableName);
                 //strAddContent = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(strAddContent)));
 
@@ -447,13 +454,14 @@ namespace ForECC
                     strFrontContent = strContent.Substring(0, iCompanyNameStart);
                     strBelowContent = strContent.Substring(iCompanyNameStart, strContent.Length - iCompanyNameStart);
 
-                    strNewContent = "<%--converted--%>" + "&&&" + strFrontContent + "&&&" + strAddContent + strBelowContent;
+                    strNewContent = "<%--converted--%>" + Environment.NewLine + strFrontContent + Environment.NewLine + strAddContent + strBelowContent;
                     //strNewContent = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(strNewContent)));
                 }
                 else
                 {
+                    strNewContent = strContent;
                     //MessageBox.Show("没有发现字符串基本信息");
-                    WriteLog(strProcessName + ".aspx", ltBoxNoExistString, "没有发现字符串基本信息");
+                    WriteLog(strProcessName + ".aspx", ltBoxNoExistString, "没有发现字符串基本信息,编码格式为" + strFileEncoding);
 
                 }
             }
@@ -468,17 +476,18 @@ namespace ForECC
 
 
 
-            FileStream fsw = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Write);
-            using (StreamWriter sw = new StreamWriter(fsw, Encoding.Unicode))
+            FileStream fsw = new FileStream(strOriginFilePath, FileMode.Create, FileAccess.Write);//FileMode.Create 复制之前清空文件防止编码问题导致错误
+            using (StreamWriter sw = new StreamWriter(fsw, strFileEncoding))
             //using (StreamWriter sw = new StreamWriter(strOriginFilePath))
             {
-                //sw.Write(strNewContent);
 
-                foreach (string s in strNewContent.Split("&&&"))
-                {
-                    sw.WriteLine(s);
+                sw.Write(strNewContent);
 
-                }
+                //foreach (string s in strNewContent.Split("&&&"))
+                //{
+                //    sw.WriteLine(s);
+
+                //}
                 //sw.WriteAsync(strNewContent);
                 sw.Close();
                 fsw.Close();
@@ -1276,8 +1285,8 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    if (AspxFile.Name.Contains("FIDepositApplication10"))
-                                        FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    //if (AspxFile.Name.Contains("MDProductApplication10"))
+                                    FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
 
                                 }
@@ -1328,7 +1337,14 @@ namespace ForECC
                     return;
                 }
 
+                string strModelJSFile = Directory.GetCurrentDirectory() + "\\ITInResRequest.js";
+                //File.Copy(strModelJSFile, txtBoxTarget.Text+"\\Modules\\"+txt);
 
+                string strModelAshxFile = Directory.GetCurrentDirectory() + "\\ITInResRequest.ashx";
+                if (!File.Exists(txtBoxTarget.Text))
+                {
+                    File.Copy(strModelAshxFile, txtBoxTarget.Text);
+                }
             }
             else
             {

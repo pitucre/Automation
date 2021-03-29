@@ -9,5 +9,8 @@
     <None Update="BGSignetApplication10.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </None>
+    <None Update="MDProductApplication20.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </None>
   </ItemGroup>
 </Project>

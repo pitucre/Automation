@@ -62,6 +62,8 @@ namespace ForECC
             this.rTBoxTarget = new System.Windows.Forms.RichTextBox();
             this.rTBoxOrigin = new System.Windows.Forms.RichTextBox();
             this.tPManual = new System.Windows.Forms.TabPage();
+            this.txtBoxTableName = new System.Windows.Forms.TextBox();
+            this.label15 = new System.Windows.Forms.Label();
             this.btnModuleFolder = new System.Windows.Forms.Button();
             this.btnMake = new System.Windows.Forms.Button();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -74,6 +76,16 @@ namespace ForECC
             this.menuFD_ECC = new System.Windows.Forms.OpenFileDialog();
             this.folderBD_ECC = new System.Windows.Forms.FolderBrowserDialog();
             this.folderBrowserDialog2 = new System.Windows.Forms.FolderBrowserDialog();
+            this.button5 = new System.Windows.Forms.Button();
+            this.button6 = new System.Windows.Forms.Button();
+            this.statusStrip2 = new System.Windows.Forms.StatusStrip();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tPAuto.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -132,9 +144,9 @@ namespace ForECC
             // 
             this.ltBoxLogAll.FormattingEnabled = true;
             this.ltBoxLogAll.ItemHeight = 17;
-            this.ltBoxLogAll.Location = new System.Drawing.Point(1145, 72);
+            this.ltBoxLogAll.Location = new System.Drawing.Point(581, 573);
             this.ltBoxLogAll.Name = "ltBoxLogAll";
-            this.ltBoxLogAll.Size = new System.Drawing.Size(207, 497);
+            this.ltBoxLogAll.Size = new System.Drawing.Size(514, 140);
             this.ltBoxLogAll.TabIndex = 14;
             // 
             // lblCountAspx
@@ -410,6 +422,8 @@ namespace ForECC
             // 
             // tPManual
             // 
+            this.tPManual.Controls.Add(this.txtBoxTableName);
+            this.tPManual.Controls.Add(this.label15);
             this.tPManual.Controls.Add(this.btnModuleFolder);
             this.tPManual.Controls.Add(this.btnMake);
             this.tPManual.Controls.Add(this.statusStrip1);
@@ -426,6 +440,22 @@ namespace ForECC
             this.tPManual.TabIndex = 1;
             this.tPManual.Text = "手动转换";
             this.tPManual.UseVisualStyleBackColor = true;
+            // 
+            // txtBoxTableName
+            // 
+            this.txtBoxTableName.Location = new System.Drawing.Point(252, 156);
+            this.txtBoxTableName.Name = "txtBoxTableName";
+            this.txtBoxTableName.Size = new System.Drawing.Size(134, 23);
+            this.txtBoxTableName.TabIndex = 1;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(147, 159);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(44, 17);
+            this.label15.TabIndex = 0;
+            this.label15.Text = "表名：";
             // 
             // btnModuleFolder
             // 
@@ -473,7 +503,7 @@ namespace ForECC
             // 
             // txtBoxWindow
             // 
-            this.txtBoxWindow.Location = new System.Drawing.Point(252, 139);
+            this.txtBoxWindow.Location = new System.Drawing.Point(252, 118);
             this.txtBoxWindow.Name = "txtBoxWindow";
             this.txtBoxWindow.Size = new System.Drawing.Size(134, 23);
             this.txtBoxWindow.TabIndex = 1;
@@ -481,7 +511,7 @@ namespace ForECC
             // lblWindow
             // 
             this.lblWindow.AutoSize = true;
-            this.lblWindow.Location = new System.Drawing.Point(147, 142);
+            this.lblWindow.Location = new System.Drawing.Point(147, 121);
             this.lblWindow.Name = "lblWindow";
             this.lblWindow.Size = new System.Drawing.Size(103, 17);
             this.lblWindow.TabIndex = 0;
@@ -506,6 +536,88 @@ namespace ForECC
             // menuFD_ECC
             // 
             this.menuFD_ECC.FileName = "menuFD_ECC";
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(651, 204);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(125, 23);
+            this.button5.TabIndex = 4;
+            this.button5.Text = "选择model文件夹";
+            this.button5.UseVisualStyleBackColor = true;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(179, 357);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(161, 23);
+            this.button6.TabIndex = 3;
+            this.button6.Text = "点击生成js文件和ashx文件";
+            this.button6.UseVisualStyleBackColor = true;
+            // 
+            // statusStrip2
+            // 
+            this.statusStrip2.Location = new System.Drawing.Point(3, 732);
+            this.statusStrip2.Name = "statusStrip2";
+            this.statusStrip2.Size = new System.Drawing.Size(1391, 22);
+            this.statusStrip2.TabIndex = 2;
+            this.statusStrip2.Text = "statusStrip2";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(252, 201);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(359, 23);
+            this.textBox1.TabIndex = 1;
+            this.textBox1.Text = "D:\\Source\\ECC\\FlowPortal BPM 6.x\\WEB\\YZModules";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(147, 204);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(80, 17);
+            this.label12.TabIndex = 0;
+            this.label12.Text = "目标文件夹：";
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(252, 118);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(134, 23);
+            this.textBox2.TabIndex = 1;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(147, 121);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(103, 17);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "Window的标题：";
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(252, 71);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(134, 23);
+            this.textBox3.TabIndex = 1;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(147, 74);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(86, 17);
+            this.label14.TabIndex = 0;
+            this.label14.Text = "Form的名字：";
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(252, 118);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(134, 23);
+            this.textBox4.TabIndex = 1;
             // 
             // Form1
             // 
@@ -574,6 +686,18 @@ namespace ForECC
         private System.Windows.Forms.Label lblCountAspx;
         private System.Windows.Forms.ListBox ltBoxLogAll;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.StatusStrip statusStrip2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox txtBoxTableName;
+        private System.Windows.Forms.Label label15;
     }
 }
 
