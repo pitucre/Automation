@@ -402,6 +402,15 @@ namespace ForECC
                             line = line.Replace("<aspxform:XLabel ", "<aspxform:XLabel BackColor=\"Transparent\" ").Trim();
                             //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
                         }
+
+                        if (line.Contains("getElementsByName"))
+                        {
+                           line= line.Replace("getElementsByName", "Ext.get").Replace(")", ").down('.yz-xform-field-ele').dom.value");
+                        }
+                        if (line.Contains("getElementsByID"))
+                        {
+                           line= line.Replace("getElementsByID", "Ext.get").Replace(")", ").down('.yz-xform-field-ele').dom.value");
+                        }
                         Console.WriteLine("注释语句删除");
                         strContent = strContent + line + Environment.NewLine;
                     }
@@ -438,9 +447,9 @@ namespace ForECC
                 strTableName = strContent.Substring(iTableNameStart + strTag.Length, iTableNameEnd - iTableNameStart - strTag.Length);
 
                 //要增加的部门名字代码
-                string strAddContent = @"                   <td  class=""Col0"">
-                        <aspxform:XLabel id=""XLabe66"" runat=""server"" XDataBind=""BPMCEDATA:{0}.CompanyName"" BorderColor=""Transparent"" BackColor=""Transparent""></aspxform:XLabel >             
-                                 </td> 
+                string strAddContent = @" 
+                        <aspxform:XLabel id=""XLabe66"" width=""90%"" TextAlign=""Right"" runat=""server"" XDataBind=""BPMCEDATA:{0}.CompanyName"" BorderColor=""Transparent"" BackColor=""Transparent""></aspxform:XLabel >             
+
 ";
 
                 strAddContent = string.Format(strAddContent, strTableName);
@@ -449,7 +458,7 @@ namespace ForECC
                 iCompanyFlag = strContent.IndexOf("基本信息");
                 if (iCompanyFlag > 0)
                 {
-                    iCompanyNameStart = strContent.IndexOf("</tr", iCompanyFlag);
+                    iCompanyNameStart = strContent.IndexOf("</td", iCompanyFlag);
 
                     strFrontContent = strContent.Substring(0, iCompanyNameStart);
                     strBelowContent = strContent.Substring(iCompanyNameStart, strContent.Length - iCompanyNameStart);
@@ -1285,8 +1294,8 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    //if (AspxFile.Name.Contains("MDProductApplication10"))
-                                    FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    if (AspxFile.Name.Contains("ITSupUpdApplication10"))
+                                        FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
 
                                 }
