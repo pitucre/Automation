@@ -364,7 +364,7 @@ namespace ForECC
             {
                 File.Copy(strOriginFilePath, strOriginFilePath + "_backup");//备份文件
             }
-
+            #region 循环替换标签透明和修改JS语法模块
 
             //4种编码  
             Encoding utf8 = Encoding.UTF8;
@@ -378,10 +378,11 @@ namespace ForECC
             using (StreamReader file = new StreamReader(strOriginFilePath, strFileEncoding))//超级重要，C#字符串默认是Unicode，必须以Unicode格式打开
             //using (StreamReader file = new StreamReader(strOriginFilePath))
             {
+                
                 while ((line = file.ReadLine()) != null)
                 {
                     //line = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
-                    if (line.Contains("//Converted"))//如果文件已经更新过跳出逻辑
+                    if (line.Contains("--Converted"))//如果文件已经更新过跳出逻辑
                     {
                         //ltBoxConverted.Items.Add(strProcessName + ".ashx文件已更新过！");
                         WriteLog(strProcessName, ltBoxAspx, ".aspx文件已更新过！");
@@ -403,13 +404,29 @@ namespace ForECC
                             //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
                         }
 
-                        if (line.Contains("getElementsByName"))
+                        //
+                        if (line.Contains("<table ") && !line.Contains("width", StringComparison.OrdinalIgnoreCase))//批量加背景
                         {
-                           line= line.Replace("getElementsByName", "Ext.get").Replace(")", ").down('.yz-xform-field-ele').dom.value");
+                            line = line.Replace("<table ", "<table width=\"95%\"").Trim();
+                            //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
                         }
-                        if (line.Contains("getElementsByID"))
+
+                        if (line.Contains("getElementsByName", StringComparison.OrdinalIgnoreCase)&&line.Contains("value", StringComparison.OrdinalIgnoreCase))
                         {
-                           line= line.Replace("getElementsByID", "Ext.get").Replace(")", ").down('.yz-xform-field-ele').dom.value");
+                            line = line.Replace("document.getElementsByName", "Ext.get").Replace(")", ").down('.yz-xform-field-ele').dom.value");
+                        }
+
+                        if (line.Contains("getElementsByName", StringComparison.OrdinalIgnoreCase) && line.Contains("innerHTML", StringComparison.OrdinalIgnoreCase))
+                        {
+                            line = line.Replace("document.getElementsByName", "Ext.get").Replace("\").innerHTML", ".yz-xform-field-ele\").html()");
+                        }
+                        if (line.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && line.Contains("value", StringComparison.OrdinalIgnoreCase))
+                        {
+                            line = line.Replace("document.getElementById", "Ext.get").Replace(")", ").down('.yz-xform-field-ele').dom.value");
+                        }
+                        if (line.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && line.Contains("innerText", StringComparison.OrdinalIgnoreCase))
+                        {
+                            line = line.Replace("document.getElementById", "$(").Replace("\").innerText", ".yz-xform-field-ele\").html()");
                         }
                         Console.WriteLine("注释语句删除");
                         strContent = strContent + line + Environment.NewLine;
@@ -420,8 +437,11 @@ namespace ForECC
 
                 file.Close();
                 fsr.Close();
+                
             }
-
+            #endregion
+            #region 删除审批意见模块
+            //删除审批意见
             string strPattern = @"<table style=""MARGIN.*?>[\s\S]*?</table>";
             //strPattern = @"<table.*?>[\s\S]*?<\/table>";
             foreach (Match match in Regex.Matches(strContent, strPattern))
@@ -433,9 +453,13 @@ namespace ForECC
                     break;
                 }
 
-            //Regex.Replace(strContent, strPattern,"");
+            
+
 
             //strContent.Replace(strReplaceContent, "");
+            #endregion
+
+            #region 获取信息后添加部门信息模块
 
             strTag = "BPMCEDATA:";
             iTableNameStart = strContent.IndexOf(strTag);
@@ -448,17 +472,34 @@ namespace ForECC
 
                 //要增加的部门名字代码
                 string strAddContent = @" 
-                        <aspxform:XLabel id=""XLabe66"" width=""90%"" TextAlign=""Right"" runat=""server"" XDataBind=""BPMCEDATA:{0}.CompanyName"" BorderColor=""Transparent"" BackColor=""Transparent""></aspxform:XLabel >             
-
+                        <td width=""169"" class=""Col0"">
+                        < aspxform:XLabel id=""XLabe66"" runat=""server"" XDataBind=""BPMCEDATA:{0}.CompanyName"" BorderColor=""Transparent"" BackColor=""Transparent""></aspxform:XLabel >
+                        </td >
 ";
 
                 strAddContent = string.Format(strAddContent, strTableName);
+
+                #region 要添加的下面的部门替换片段
+                //要添加的下面的部门替换片段
+                string strMendContent = @"
+                                        <aspxform:XPositionMap id=""XPositionMap1"" runat=""server"" DataMap=""OUName->BPMCEDATA:{0}.CompanyName; ParentOUName->BPMCEDATA:{0}.{1}"" OULevel=""2级部门""></aspxform:XPositionMap>
+                    ";
+
+                strPattern = @"\.[a-zA-Z]*Dept[a-zA-Z]*";
+                string strDept = "";
+                strDept=Regex.Match(strContent, strPattern).Value.Replace(".", "");
+
+                strMendContent = string.Format(strContent, strTableName, strDept);
+
+                strPattern = @"<aspxform:XProcessButtonList.*?>[\s\S]*?</aspxform:XProcessButtonList>";
+                strContent= Regex.Replace(strContent, strPattern, strMendContent);
+                #endregion
                 //strAddContent = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(strAddContent)));
 
                 iCompanyFlag = strContent.IndexOf("基本信息");
                 if (iCompanyFlag > 0)
                 {
-                    iCompanyNameStart = strContent.IndexOf("</td", iCompanyFlag);
+                    iCompanyNameStart = strContent.IndexOf("</tr", iCompanyFlag);
 
                     strFrontContent = strContent.Substring(0, iCompanyNameStart);
                     strBelowContent = strContent.Substring(iCompanyNameStart, strContent.Length - iCompanyNameStart);
@@ -480,7 +521,7 @@ namespace ForECC
                 WriteLog(strProcessName + ".aspx", ltBoxNoExistString, "没有发现" + strTag);
             }
 
-
+            #endregion
             //正则查找
 
 
@@ -1294,7 +1335,7 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    if (AspxFile.Name.Contains("ITSupUpdApplication10"))
+                                    if (AspxFile.Name.Contains("FIDepositApplication10"))
                                         FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
 
