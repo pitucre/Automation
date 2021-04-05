@@ -328,7 +328,7 @@ namespace ForECC
             }
             #region 提取文件中的有用信息
             int iTableNameStart, iTableNameEnd;//数据库表的位置
-            string strTableName;//数据库表名
+            string strTableName="";//数据库表名
             string line;
             string strContent = "";//文本文件内容
 
@@ -378,7 +378,7 @@ namespace ForECC
             using (StreamReader file = new StreamReader(strOriginFilePath, strFileEncoding))//超级重要，C#字符串默认是Unicode，必须以Unicode格式打开
             //using (StreamReader file = new StreamReader(strOriginFilePath))
             {
-                
+
                 while ((line = file.ReadLine()) != null)
                 {
                     //line = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
@@ -411,7 +411,7 @@ namespace ForECC
                             //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
                         }
 
-                        if (line.Contains("getElementsByName", StringComparison.OrdinalIgnoreCase)&&line.Contains("value", StringComparison.OrdinalIgnoreCase))
+                        if (line.Contains("getElementsByName", StringComparison.OrdinalIgnoreCase) && line.Contains("value", StringComparison.OrdinalIgnoreCase))
                         {
                             line = line.Replace("document.getElementsByName", "Ext.get").Replace(")", ").down('.yz-xform-field-ele').dom.value");
                         }
@@ -437,7 +437,7 @@ namespace ForECC
 
                 file.Close();
                 fsr.Close();
-                
+
             }
             #endregion
             #region 删除审批意见模块
@@ -453,72 +453,122 @@ namespace ForECC
                     break;
                 }
 
-            
+
 
 
             //strContent.Replace(strReplaceContent, "");
             #endregion
 
-            #region 获取信息后添加部门信息模块
 
-            strTag = "BPMCEDATA:";
-            iTableNameStart = strContent.IndexOf(strTag);
+          
 
-            if (iTableNameStart > 0)
+            #region 更改函数体
+            //要添加的函数体
+            if (!strContent.Contains("GenExcelReport"))//如果没有替换过
             {
-                iTableNameEnd = strContent.IndexOf(".", iTableNameStart);
+                string strNewFunction = @"
+                                          Ext.require([""YZSoft.src.ux.File""]);
+                                          function excel_JDE_Export_New()
+                                                {
+                                                    var reportServiceUrl = '../../../../YZSoft.Services.REST/Reports/Report.ashx';
+                                                    var bm = '';
+                                                    var params = { deptname: bm };
 
-                strTableName = strContent.Substring(iTableNameStart + strTag.Length, iTableNameEnd - iTableNameStart - strTag.Length);
+                                          params['Method'] = 'GenExcelReport';
+                                          params['ExcelFile'] = '~/YZModules/ISProcess/&&&';
+                                          params['outputType'] = 'Export';
+                                                    var pms = new Array();
+                                                    Ext.Object.each(params, function(key, val) {
+                                                        if (key != 'UserParamNames')
+                                                            pms.push(key);
+                                                    });
+                                          params['UserParamNames'] = pms.join(',');
+                                                YZSoft.src.ux.File.download(reportServiceUrl, params);
+                                            }
+                                           ";
 
-                //要增加的部门名字代码
-                string strAddContent = @" 
+                strPattern = @"Excel/.*.xls";
+                string strDownloadFileName = "";
+                strDownloadFileName = Regex.Match(strContent, strPattern).Value;
+
+                strNewFunction = strNewFunction.Replace("&&&", strDownloadFileName);
+
+                strPattern = @"function excel.+{[\s\S]+}";
+                strContent = Regex.Replace(strContent, strPattern, strNewFunction);
+            }
+
+            #endregion
+
+            #region 获取信息后添加部门信息模块
+            if (!strContent.Contains("XLabe66"))//如果没有替换过
+            {
+                strTag = "BPMCEDATA:";
+                iTableNameStart = strContent.IndexOf(strTag);
+
+                if (iTableNameStart > 0)
+                {
+                    iTableNameEnd = strContent.IndexOf(".", iTableNameStart);
+
+                    strTableName = strContent.Substring(iTableNameStart + strTag.Length, iTableNameEnd - iTableNameStart - strTag.Length);
+
+                    #region 要添加的下面的部门替换片段
+                    if (!strContent.Contains("XPositionMap1") && strContent.Contains("XProcessButtonList"))//如果没有替换过
+                    {
+                        //要添加的下面的部门替换片段
+                        string strMendContent = @"
+                                        <aspxform:XPositionMap id=""XPositionMap1"" runat=""server"" DataMap=""OUName->BPMCEDATA:{0}.CompanyName; ParentOUName->BPMCEDATA:{0}.{1}"" OULevel=""2级部门""></aspxform:XPositionMap>
+                              <aspxform:XLabel BackColor=""Transparent"" id=""XLabe33"" runat=""server"" XDataBind=""BPMCEDATA: ISECCJDEUerInformation_M.Dept"" text=""Label"" ValueToDisplayText Value HiddenExpress=""1 == 1"" ></aspxform:XLabel>
+
+                    ";
+
+                        strPattern = @"\.[a-zA-Z]*Dept[a-zA-Z]*";
+                        string strDept = "";
+                        strDept = Regex.Match(strContent, strPattern).Value.Replace(".", "");
+
+                        strMendContent = string.Format(strMendContent, strTableName, strDept);
+
+                        strPattern = @"<aspxform:XProcessButtonList.*?>[\s\S]*?</aspxform:XProcessButtonList>";
+                        strContent = Regex.Replace(strContent, strPattern, strMendContent);
+                    }
+                    #endregion
+
+                    //要增加的部门名字代码
+                    string strAddContent = @" 
                         <td width=""169"" class=""Col0"">
-                        < aspxform:XLabel id=""XLabe66"" runat=""server"" XDataBind=""BPMCEDATA:{0}.CompanyName"" BorderColor=""Transparent"" BackColor=""Transparent""></aspxform:XLabel >
+                        <aspxform:XLabel id=""XLabe66"" runat=""server"" XDataBind=""BPMCEDATA:{0}.CompanyName"" BorderColor=""Transparent"" BackColor=""Transparent""></aspxform:XLabel >
                         </td >
 ";
 
-                strAddContent = string.Format(strAddContent, strTableName);
+                    strAddContent = string.Format(strAddContent, strTableName);
 
-                #region 要添加的下面的部门替换片段
-                //要添加的下面的部门替换片段
-                string strMendContent = @"
-                                        <aspxform:XPositionMap id=""XPositionMap1"" runat=""server"" DataMap=""OUName->BPMCEDATA:{0}.CompanyName; ParentOUName->BPMCEDATA:{0}.{1}"" OULevel=""2级部门""></aspxform:XPositionMap>
-                    ";
 
-                strPattern = @"\.[a-zA-Z]*Dept[a-zA-Z]*";
-                string strDept = "";
-                strDept=Regex.Match(strContent, strPattern).Value.Replace(".", "");
+                    //strAddContent = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(strAddContent)));
 
-                strMendContent = string.Format(strContent, strTableName, strDept);
+                    iCompanyFlag = strContent.IndexOf("基本信息");
+                    if (iCompanyFlag > 0)
+                    {
+                        iCompanyNameStart = strContent.IndexOf("</tr", iCompanyFlag);
 
-                strPattern = @"<aspxform:XProcessButtonList.*?>[\s\S]*?</aspxform:XProcessButtonList>";
-                strContent= Regex.Replace(strContent, strPattern, strMendContent);
-                #endregion
-                //strAddContent = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(strAddContent)));
+                        strFrontContent = strContent.Substring(0, iCompanyNameStart);
+                        strBelowContent = strContent.Substring(iCompanyNameStart, strContent.Length - iCompanyNameStart);
 
-                iCompanyFlag = strContent.IndexOf("基本信息");
-                if (iCompanyFlag > 0)
-                {
-                    iCompanyNameStart = strContent.IndexOf("</tr", iCompanyFlag);
+                        strNewContent = "<%--converted--%>" + Environment.NewLine + strFrontContent + Environment.NewLine + strAddContent + strBelowContent;
+                        //strNewContent = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(strNewContent)));
+                    }
+                    else
+                    {
+                        strNewContent = strContent;
+                        //MessageBox.Show("没有发现字符串基本信息");
+                        WriteLog(strProcessName + ".aspx", ltBoxNoExistString, "没有发现字符串基本信息,编码格式为" + strFileEncoding);
 
-                    strFrontContent = strContent.Substring(0, iCompanyNameStart);
-                    strBelowContent = strContent.Substring(iCompanyNameStart, strContent.Length - iCompanyNameStart);
-
-                    strNewContent = "<%--converted--%>" + Environment.NewLine + strFrontContent + Environment.NewLine + strAddContent + strBelowContent;
-                    //strNewContent = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(strNewContent)));
+                    }
                 }
                 else
                 {
-                    strNewContent = strContent;
-                    //MessageBox.Show("没有发现字符串基本信息");
-                    WriteLog(strProcessName + ".aspx", ltBoxNoExistString, "没有发现字符串基本信息,编码格式为" + strFileEncoding);
-
+                    //MessageBox.Show("没有发现" + strTag);
+                    WriteLog(strProcessName + ".aspx", ltBoxNoExistString, "没有发现" + strTag);
                 }
-            }
-            else
-            {
-                //MessageBox.Show("没有发现" + strTag);
-                WriteLog(strProcessName + ".aspx", ltBoxNoExistString, "没有发现" + strTag);
+
             }
 
             #endregion
@@ -1335,7 +1385,7 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    if (AspxFile.Name.Contains("FIDepositApplication10"))
+                                    if (AspxFile.Name.Contains("ISECCJDEUerInformation.aspx"))
                                         FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
 
