@@ -328,7 +328,7 @@ namespace ForECC
             }
             #region 提取文件中的有用信息
             int iTableNameStart, iTableNameEnd;//数据库表的位置
-            string strTableName="";//数据库表名
+            string strTableName = "";//数据库表名
             string line;
             string strContent = "";//文本文件内容
 
@@ -413,20 +413,20 @@ namespace ForECC
 
                         if (line.Contains("getElementsByName", StringComparison.OrdinalIgnoreCase) && line.Contains("value", StringComparison.OrdinalIgnoreCase))
                         {
-                            line = line.Replace("document.getElementsByName", "Ext.get").Replace(")", ").down('.yz-xform-field-ele').dom.value");
+                            line = line.Replace("document.getElementsByName", "$").Replace(").value", ").down('.yz-xform-field-ele').dom.value");
                         }
 
-                        if (line.Contains("getElementsByName", StringComparison.OrdinalIgnoreCase) && line.Contains("innerHTML", StringComparison.OrdinalIgnoreCase))
+                        if (line.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && line.Contains("innerHTML", StringComparison.OrdinalIgnoreCase))
                         {
-                            line = line.Replace("document.getElementsByName", "Ext.get").Replace("\").innerHTML", ".yz-xform-field-ele\").html()");
+                            line = line.Replace("document.getElementById", "Ext.get").Replace("\").innerHTML", ".yz-xform-field-ele\").html()");
                         }
                         if (line.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && line.Contains("value", StringComparison.OrdinalIgnoreCase))
                         {
-                            line = line.Replace("document.getElementById", "Ext.get").Replace(")", ").down('.yz-xform-field-ele').dom.value");
+                            line = line.Replace("document.getElementById", "Ext.get").Replace(").value", ").down('.yz-xform-field-ele').dom.value");
                         }
                         if (line.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && line.Contains("innerText", StringComparison.OrdinalIgnoreCase))
                         {
-                            line = line.Replace("document.getElementById", "$(").Replace("\").innerText", ".yz-xform-field-ele\").html()");
+                            line = line.Replace("document.getElementById", "$").Replace("\").innerText", ".yz-xform-field-ele\").html()");
                         }
                         Console.WriteLine("注释语句删除");
                         strContent = strContent + line + Environment.NewLine;
@@ -460,7 +460,7 @@ namespace ForECC
             #endregion
 
 
-          
+
 
             #region 更改函数体
             //要添加的函数体
@@ -493,7 +493,7 @@ namespace ForECC
 
                 strNewFunction = strNewFunction.Replace("&&&", strDownloadFileName);
 
-                strPattern = @"function excel.+{[\s\S]+}";
+                strPattern = @"function excel.+{[\s\S]+}///";//特意加///表示结尾，替换之前加上///
                 strContent = Regex.Replace(strContent, strPattern, strNewFunction);
             }
 
@@ -1385,7 +1385,7 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    if (AspxFile.Name.Contains("ISECCJDEUerInformation.aspx"))
+                                    if (AspxFile.Name.Contains("ISContractApplication20.aspx"))
                                         FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
 
@@ -1451,6 +1451,120 @@ namespace ForECC
                 MessageBox.Show("您没有选择认为文件夹！");
             }
         }
+
+        delegate string FormatContent(string strContent);
+
+        private void btConvertJs_Click(object sender, EventArgs e)
+        {
+
+
+            FormatContent frContent;
+            frContent = FormateDownloadExcelFunction;
+            rtBoxExtjs6.Text = frContent(rtBoxExtjs4.Text);
+
+            frContent = FormatElement;
+
+            rtBoxExtjs6.Text = frContent(rtBoxExtjs6.Text);
+
+        }
+        /// <summary>
+        /// 格式化语法
+        /// </summary>
+        /// <param name="strContent"></param>
+        /// <returns></returns>
+        private string FormatElement(string strContentOld)
+        {
+            string[] strS = strContentOld.Split(Environment.NewLine.ToCharArray());
+
+            string strContentNew = "";
+
+            string strTemp = "";
+
+            foreach (string strContent in strS)
+            {
+
+                if (strContent.Contains("getElementsByName", StringComparison.OrdinalIgnoreCase) && strContent.Contains("value", StringComparison.OrdinalIgnoreCase))
+                {
+                    strTemp = strContent.Replace("document.getElementsByName", "$").Replace(").value", ").down('.yz-xform-field-ele').dom.value");
+                }
+                else if (strContent.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && strContent.Contains("innerHTML", StringComparison.OrdinalIgnoreCase))
+                {
+                    strTemp = strContent.Replace("document.getElementById", "Ext.get").Replace("\").innerHTML", ".yz-xform-field-ele\").html()");
+                }
+                else if (strContent.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && strContent.Contains("value", StringComparison.OrdinalIgnoreCase))
+                {
+                    strTemp = strContent.Replace("document.getElementById", "Ext.get").Replace(").value", ").down('.yz-xform-field-ele').dom.value");
+                }
+                else if (strContent.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && strContent.Contains("innerText", StringComparison.OrdinalIgnoreCase))
+                {
+                    strTemp = strContent.Replace("document.getElementById", "$").Replace("\").innerText", ".yz-xform-field-ele\").html()");
+                }
+                else if (strContent.Contains("getElementsByName", StringComparison.OrdinalIgnoreCase))
+                {
+                    strTemp = strContent.Replace("document.getElementsByName", "$").Replace(")", ").down('.yz-xform-field-ele').dom");
+
+                }
+                else
+                {
+                    strTemp = strContent;
+                }
+
+
+
+                strContentNew = strContentNew + strTemp + Environment.NewLine;
+
+            }
+
+            return strContentNew;
+        }
+        /// <summary>
+        /// 替换函数体
+        /// </summary>
+        /// <param name="strContent">要替换的内容</param>
+        /// <param name="strPattern">正则表达式</param>
+        private string FormateDownloadExcelFunction(string strContent)
+        {
+            if (!strContent.Contains("GenExcelReport"))//如果没有替换过
+            {
+                string strNewFunction = @"
+                                          Ext.require([""YZSoft.src.ux.File""]);
+                                          function excel_JDE_Export_New()
+                                                {
+                                                    var reportServiceUrl = '../../../../YZSoft.Services.REST/Reports/Report.ashx';
+                                                    var bm = '';
+                                                    var params = { deptname: bm };
+
+                                          params['Method'] = 'GenExcelReport';
+                                          params['ExcelFile'] = '~/YZModules/ISProcess/&&&';
+                                          params['outputType'] = 'Export';
+                                                    var pms = new Array();
+                                                    Ext.Object.each(params, function(key, val) {
+                                                        if (key != 'UserParamNames')
+                                                            pms.push(key);
+                                                    });
+                                          params['UserParamNames'] = pms.join(',');
+                                                YZSoft.src.ux.File.download(reportServiceUrl, params);
+                                            }
+                                           ";
+
+                string strPattern = @"Excel/.*.xls";
+                string strDownloadFileName = "";
+                strDownloadFileName = Regex.Match(strContent, strPattern).Value;
+
+                strNewFunction = strNewFunction.Replace("&&&", strDownloadFileName);
+
+                strPattern = @"function excel.+{[\s\S]+}///";//特意加///表示结尾，替换之前加上///
+                strContent = Regex.Replace(strContent, strPattern, strNewFunction);
+                return strContent;
+            }
+            else
+            {
+
+                return strContent;
+            }
+        }
+
+
     }
 }
 #endregion

@@ -73,6 +73,12 @@ namespace ForECC
             this.lblWindow = new System.Windows.Forms.Label();
             this.txtBoxForm = new System.Windows.Forms.TextBox();
             this.lblForm = new System.Windows.Forms.Label();
+            this.tPJS = new System.Windows.Forms.TabPage();
+            this.btConvertJs = new System.Windows.Forms.Button();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.rtBoxExtjs6 = new System.Windows.Forms.RichTextBox();
+            this.rtBoxExtjs4 = new System.Windows.Forms.RichTextBox();
             this.menuFD_ECC = new System.Windows.Forms.OpenFileDialog();
             this.folderBD_ECC = new System.Windows.Forms.FolderBrowserDialog();
             this.folderBrowserDialog2 = new System.Windows.Forms.FolderBrowserDialog();
@@ -90,12 +96,14 @@ namespace ForECC
             this.tPAuto.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tPManual.SuspendLayout();
+            this.tPJS.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tPAuto);
             this.tabControl1.Controls.Add(this.tPManual);
+            this.tabControl1.Controls.Add(this.tPJS);
             this.tabControl1.Location = new System.Drawing.Point(2, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -533,6 +541,63 @@ namespace ForECC
             this.lblForm.TabIndex = 0;
             this.lblForm.Text = "Form的名字：";
             // 
+            // tPJS
+            // 
+            this.tPJS.Controls.Add(this.btConvertJs);
+            this.tPJS.Controls.Add(this.label17);
+            this.tPJS.Controls.Add(this.label16);
+            this.tPJS.Controls.Add(this.rtBoxExtjs6);
+            this.tPJS.Controls.Add(this.rtBoxExtjs4);
+            this.tPJS.Location = new System.Drawing.Point(4, 26);
+            this.tPJS.Name = "tPJS";
+            this.tPJS.Size = new System.Drawing.Size(1397, 757);
+            this.tPJS.TabIndex = 2;
+            this.tPJS.Text = "手动js格式替换";
+            // 
+            // btConvertJs
+            // 
+            this.btConvertJs.Location = new System.Drawing.Point(519, 240);
+            this.btConvertJs.Name = "btConvertJs";
+            this.btConvertJs.Size = new System.Drawing.Size(75, 23);
+            this.btConvertJs.TabIndex = 2;
+            this.btConvertJs.Text = "转换";
+            this.btConvertJs.UseVisualStyleBackColor = true;
+            this.btConvertJs.Click += new System.EventHandler(this.btConvertJs_Click);
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(700, 13);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(41, 17);
+            this.label17.TabIndex = 1;
+            this.label17.Text = "Extjs6";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(153, 13);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(41, 17);
+            this.label16.TabIndex = 1;
+            this.label16.Text = "Extjs4";
+            // 
+            // rtBoxExtjs6
+            // 
+            this.rtBoxExtjs6.Location = new System.Drawing.Point(609, 66);
+            this.rtBoxExtjs6.Name = "rtBoxExtjs6";
+            this.rtBoxExtjs6.Size = new System.Drawing.Size(441, 565);
+            this.rtBoxExtjs6.TabIndex = 0;
+            this.rtBoxExtjs6.Text = "";
+            // 
+            // rtBoxExtjs4
+            // 
+            this.rtBoxExtjs4.Location = new System.Drawing.Point(62, 66);
+            this.rtBoxExtjs4.Name = "rtBoxExtjs4";
+            this.rtBoxExtjs4.Size = new System.Drawing.Size(441, 565);
+            this.rtBoxExtjs4.TabIndex = 0;
+            this.rtBoxExtjs4.Text = "";
+            // 
             // menuFD_ECC
             // 
             this.menuFD_ECC.FileName = "menuFD_ECC";
@@ -635,6 +700,8 @@ namespace ForECC
             this.panel1.PerformLayout();
             this.tPManual.ResumeLayout(false);
             this.tPManual.PerformLayout();
+            this.tPJS.ResumeLayout(false);
+            this.tPJS.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -698,6 +765,12 @@ namespace ForECC
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.TextBox txtBoxTableName;
         private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.TabPage tPJS;
+        private System.Windows.Forms.Button btConvertJs;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.RichTextBox rtBoxExtjs6;
+        private System.Windows.Forms.RichTextBox rtBoxExtjs4;
     }
 }
 
