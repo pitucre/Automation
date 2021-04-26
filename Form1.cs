@@ -326,7 +326,7 @@ namespace ForECC
             {
                 return;
             }
-            #region 提取文件中的有用信息
+
             int iTableNameStart, iTableNameEnd;//数据库表的位置
             string strTableName = "";//数据库表名
             string line;
@@ -1564,7 +1564,60 @@ namespace ForECC
             }
         }
 
+        private void btnConvertToCh_Click(object sender, EventArgs e)
+        {
+            if (folderBD_ECC.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (string.IsNullOrEmpty(folderBD_ECC.SelectedPath))
+                {
+                    MessageBox.Show("您没有选择任何文件夹！");
+                }
+                else
+                {
+                    bool bFind = false;
+                    //C#遍历指定文件夹中的所有文件 
+                    DirectoryInfo TheFolder = new DirectoryInfo(folderBD_ECC.SelectedPath);
 
+                    //string strPatternFolder = "LOGProcess";//只有这个文件夹才替换
+                    //遍历文件夹
+                    foreach (DirectoryInfo NextFolder in TheFolder.GetDirectories("*", SearchOption.AllDirectories))
+                    {
+
+                        if (NextFolder.Name == "XForm")//如果找到 XForm,开始进行循环处理
+                        {
+                            TheFolder = new DirectoryInfo(NextFolder.FullName);
+                            foreach (DirectoryInfo ECCFolder in TheFolder.GetDirectories("*", SearchOption.AllDirectories))
+                            {
+
+                                foreach (FileInfo AspxFile in ECCFolder.GetFiles())
+                                {
+                                    //if (AspxFile.Name.Equals("BGCompensateApplication10.aspx"))
+                                    //{
+                                        AspxFileHelper aspxFileHelper = new AspxFileHelper();
+                                        aspxFileHelper.FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+
+                                    //}
+
+                                }
+
+
+                            }
+                            bFind = true;
+                            break;
+                        }
+
+                    }
+
+                    lblCountAspx.Text = ltBoxAspx.Items.Count.ToString() + "个";
+
+                    //lblCountAshxFile.Text = ltBoxStoreDataService.Items.Count.ToString() + "个";
+                    if (bFind == false)
+                    {
+                        MessageBox.Show("没有找到XForm文件夹，请确认是否选择正确!");
+                    }
+                }
+
+            }
+        }
     }
 }
-#endregion

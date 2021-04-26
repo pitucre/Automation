@@ -31,6 +31,7 @@ namespace ForECC
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tPAuto = new System.Windows.Forms.TabPage();
+            this.btnConvertToCh = new System.Windows.Forms.Button();
             this.ltBoxLogAll = new System.Windows.Forms.ListBox();
             this.lblCountAspx = new System.Windows.Forms.Label();
             this.lblCountAshxFile = new System.Windows.Forms.Label();
@@ -112,6 +113,7 @@ namespace ForECC
             // 
             // tPAuto
             // 
+            this.tPAuto.Controls.Add(this.btnConvertToCh);
             this.tPAuto.Controls.Add(this.ltBoxLogAll);
             this.tPAuto.Controls.Add(this.lblCountAspx);
             this.tPAuto.Controls.Add(this.lblCountAshxFile);
@@ -147,6 +149,17 @@ namespace ForECC
             this.tPAuto.TabIndex = 0;
             this.tPAuto.Text = "自动转换";
             this.tPAuto.UseVisualStyleBackColor = true;
+            // 
+            // btnConvertToCh
+            // 
+            this.btnConvertToCh.Location = new System.Drawing.Point(11, 587);
+            this.btnConvertToCh.Name = "btnConvertToCh";
+            this.btnConvertToCh.Size = new System.Drawing.Size(138, 29);
+            this.btnConvertToCh.TabIndex = 15;
+            this.btnConvertToCh.Text = "移动端标签替换为中文";
+            this.btnConvertToCh.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnConvertToCh.UseVisualStyleBackColor = true;
+            this.btnConvertToCh.Click += new System.EventHandler(this.btnConvertToCh_Click);
             // 
             // ltBoxLogAll
             // 
@@ -749,9 +762,9 @@ namespace ForECC
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button btnModuleFolder;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.ListBox ltBoxAspx;
+        public System.Windows.Forms.ListBox ltBoxAspx;
         private System.Windows.Forms.Label lblCountAspx;
-        private System.Windows.Forms.ListBox ltBoxLogAll;
+        public System.Windows.Forms.ListBox ltBoxLogAll;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
@@ -771,6 +784,7 @@ namespace ForECC
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.RichTextBox rtBoxExtjs6;
         private System.Windows.Forms.RichTextBox rtBoxExtjs4;
+        private System.Windows.Forms.Button btnConvertToCh;
     }
 }
 
