@@ -165,9 +165,9 @@ namespace ForECC
             // 
             this.ltBoxLogAll.FormattingEnabled = true;
             this.ltBoxLogAll.ItemHeight = 17;
-            this.ltBoxLogAll.Location = new System.Drawing.Point(581, 573);
+            this.ltBoxLogAll.Location = new System.Drawing.Point(1113, 71);
             this.ltBoxLogAll.Name = "ltBoxLogAll";
-            this.ltBoxLogAll.Size = new System.Drawing.Size(514, 140);
+            this.ltBoxLogAll.Size = new System.Drawing.Size(239, 497);
             this.ltBoxLogAll.TabIndex = 14;
             // 
             // lblCountAspx
@@ -387,6 +387,7 @@ namespace ForECC
             this.ltBoxModules.Name = "ltBoxModules";
             this.ltBoxModules.Size = new System.Drawing.Size(256, 174);
             this.ltBoxModules.TabIndex = 4;
+            this.ltBoxModules.SelectedIndexChanged += new System.EventHandler(this.ltBoxModules_SelectedIndexChanged);
             // 
             // button3
             // 

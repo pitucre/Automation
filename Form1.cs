@@ -1591,10 +1591,11 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    //if (AspxFile.Name.Equals("BGCompensateApplication10.aspx"))
-                                    //{
-                                        AspxFileHelper aspxFileHelper = new AspxFileHelper();
-                                        aspxFileHelper.FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                   // if (AspxFile.Name.Equals("Apply CarOrMeal(china)10.aspx"))
+                                        //{
+                                        //AspxFileHelper aspxFileHelper = new AspxFileHelper();
+                                        //aspxFileHelper.FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                        FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
                                     //}
 
@@ -1618,6 +1619,210 @@ namespace ForECC
                 }
 
             }
+        }
+
+        public void FormatAspxFileConvertLableNameToCH(string strOriginFilePath, string strProcessName, string strProcessGroup, string strProcessNameCN = "")
+        {
+            if (strProcessName.Contains("_backup") || strProcessName.Contains(".uf"))//如果已经备份的文件不再处理 .uf文件不处理
+            {
+                return;
+            }
+
+            int iTableNameStart, iTableNameEnd;//数据库表的位置
+            string strTableName = "";//数据库表名
+            string line;
+            string strContent = "";//文本文件内容
+
+            int iCompanyFlag;
+            int iCompanyNameStart, iCompanyNameEnd;//记录Company出现的位置
+
+            string strReplaceContent = "";
+
+            string strFrontContent = "";//上半部分内容
+            string strBelowContent = "";//下班部分内容
+
+            string strNewContent = "";//用于存储新内容
+
+            string strTag = "";
+
+            FileEncoding fEncoding = new FileEncoding();
+
+            if (!File.Exists(strOriginFilePath + "_backup_backup"))
+            {
+                File.Copy(strOriginFilePath, strOriginFilePath + "_backup_backup");//备份文件
+            }
+            #region 通用处理下aspx文件
+
+            //4种编码  
+            Encoding utf8 = Encoding.UTF8;
+            Encoding utf16 = Encoding.Unicode;
+            //Encoding gb = Encoding.GetEncoding("gbk");
+            //Encoding b5 = Encoding.GetEncoding("big5");
+
+            Encoding strFileEncoding;
+            strFileEncoding = FileEncoding.GetEncoding(strOriginFilePath);
+            FileStream fsr = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Read);
+            using (StreamReader file = new StreamReader(strOriginFilePath, strFileEncoding))//超级重要，C#字符串默认是Unicode，必须以Unicode格式打开
+            //using (StreamReader file = new StreamReader(strOriginFilePath))
+            {
+
+                while ((line = file.ReadLine()) != null)
+                {
+
+                    if (line.Contains("--ConvertedConverted"))//如果文件已经更新过跳出逻辑
+                    {
+                        WriteLog(strProcessName, ltBoxAspx, ".aspx文件已更新过！");
+
+                        file.Close();
+                        fsr.Close();
+                        return;
+                    }
+                    //特殊注释删掉
+                    if (line.Trim().Length >= 4 && line.Trim().Substring(0, 4) == "<%--")
+                    {
+
+                    }
+                    else
+                    {
+                        //批量处理没有绑定的控件
+                        if (line.Contains("<aspxform:") && !line.Contains("XDataBind") && !line.Contains("Visibility=\"False\""))
+                        {
+                            string strPatternCommon = @"<aspxform:[\w]+";//获取控件名字
+                            string strControlCommon = "";
+                            foreach (Match matchControl in Regex.Matches(line, strPatternCommon))
+                            {
+                                strControlCommon = matchControl.Value;
+
+                            }
+                            line = line.Replace(strControlCommon, strControlCommon + " Visibility=\"False\"");
+                        }
+
+
+                        Console.WriteLine("注释语句删除");
+                        strContent = strContent + line + Environment.NewLine;
+                    }
+
+                }
+
+                file.Close();
+                fsr.Close();
+
+            }
+            #endregion
+
+            #region 运用正则表达式读取中文数字并进行处理
+            //删除审批意见
+            //string strPattern = @"<p.*?>[\w\W]*?</aspxform:[\w]+>";//提取从p开始的字段
+            string strPattern = @"[\s;][\u4e00-\u9fa5]+/?[\w\W]*?</aspxform:[\w]+>";//提取从p开始的字段
+            string strChinese = "";
+            string strFragment = "";//提取的片段
+            string strNewFragment = "";//要替换的的片段
+            string strControl = "";//控件
+            foreach (Match match in Regex.Matches(strContent, strPattern))
+            {
+                strFragment = match.Value;
+
+                if (Regex.IsMatch(strFragment, @"[\u4e00-\u9fa5]"))//判断里面是否有汉字
+                {
+                    //如果已经替换过的话跳出循环
+                    if (strFragment.Contains("FieldName", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+                    strPattern = @"<aspxform:[\w]+";//获取控件名字
+                    foreach (Match matchControl in Regex.Matches(strFragment, strPattern))
+                    {
+                        strControl = matchControl.Value;
+
+                        break;
+
+                    }
+                    if (strControl.Contains("CheckBox", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                    {
+                        continue;
+                    }
+                    if (strControl.Contains("XRequiredFieldValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                    {
+                        continue;
+                    }
+                    if (strControl.Contains("XCompareValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                    {
+                        continue;
+                    }
+                    if (strControl.Contains("XRegularExpressionValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                    {
+                        continue;
+                    }
+                    if (strControl.Contains("XRangeValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                    {
+                        continue;
+                    }
+                    if (strControl.Contains("XCustomValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                    {
+                        continue;
+                    }
+                    //XCompareValidator1 XRangeValidator1 XCustomValidator1
+                    strPattern = "[\u4e00-\u9fa5]+";//是否有汉字正则表达式
+                    strPattern = "(\\d?[\u4e00-\u9fa5]+/?)+";//是否有汉字正则表达式
+                    foreach (Match matchChinese in Regex.Matches(strFragment, strPattern))
+                    {
+                        strChinese = matchChinese.Value;
+                        if (strFragment.Contains("单号"))
+                        {
+                            if (strChinese == "单号")
+                            {
+                                break;//取到单号汉字就跳出了
+                            }
+                        }
+                        else
+                        {
+                            break;
+
+                        }
+
+
+                    }
+
+                    strNewFragment = strFragment.Replace(strControl, strControl + " FieldName=\"" + strChinese + "\" ");
+
+                    strContent = strContent.Replace(strFragment, strNewFragment);
+                }
+
+            }
+
+            strNewContent = "<%--ConvertedConverted--%>" + Environment.NewLine + strContent;//标记是否已经替换过
+
+
+            #endregion
+
+
+
+
+
+
+
+            FileStream fsw = new FileStream(strOriginFilePath, FileMode.Create, FileAccess.Write);//FileMode.Create 复制之前清空文件防止编码问题导致错误
+            using (StreamWriter sw = new StreamWriter(fsw, strFileEncoding))
+
+            {
+
+                sw.Write(strNewContent);
+
+
+                sw.Close();
+                fsw.Close();
+                WriteLog(strProcessName + ".aspx", ltBoxAspx);
+
+
+            }
+
+
+
+        }
+
+        private void ltBoxModules_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
