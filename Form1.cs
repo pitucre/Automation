@@ -197,7 +197,11 @@ namespace ForECC
 
             FileInfo fi = new FileInfo(strOriginFilePath);
             strOriginFilePath = strOriginFilePath.Replace("_data", "", StringComparison.OrdinalIgnoreCase); //如果名字里面有_data,把_data删除
-            fi.MoveTo(strOriginFilePath + "_backup"); //文件重命名
+            if (!File.Exists((strOriginFilePath + "_backup")))
+            {
+                fi.MoveTo(strOriginFilePath + "_backup"); //文件重命名
+            }
+
             string strModelJSFile;//模板JS文件
 
             strModelJSFile = Directory.GetCurrentDirectory() + "\\ITInResRequest.js";
@@ -914,7 +918,11 @@ namespace ForECC
             #region 有用信息复制到模板文件
             FileInfo fi = new FileInfo(strOriginFilePath);
             strOriginFilePath = strOriginFilePath.Replace("_data", "", StringComparison.OrdinalIgnoreCase).Replace(".exclude", "", StringComparison.OrdinalIgnoreCase); //如果名字里面有_data和.exclude,把_data和.exclude删除
-            fi.MoveTo(strOriginFilePath + "_backup"); //文件重命名
+            if (!File.Exists((strOriginFilePath + "_backup")))
+            {
+                fi.MoveTo(strOriginFilePath + "_backup"); //文件重命名
+            }
+
             string strModelAshxFile;//模板ashx文件
 
             strModelAshxFile = Directory.GetCurrentDirectory() + "\\ITInResRequest.ashx";
@@ -1385,8 +1393,9 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    if (AspxFile.Name.Contains("ISContractApplication20.aspx"))
-                                        FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    //if (AspxFile.Name.Contains("ISContractApplication20.aspx"))
+                                    FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
 
                                 }
@@ -1591,11 +1600,11 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                   // if (AspxFile.Name.Equals("Apply CarOrMeal(china)10.aspx"))
-                                        //{
-                                        //AspxFileHelper aspxFileHelper = new AspxFileHelper();
-                                        //aspxFileHelper.FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
-                                        FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    // if (AspxFile.Name.Equals("Apply CarOrMeal(china)10.aspx"))
+                                    //{
+                                    //AspxFileHelper aspxFileHelper = new AspxFileHelper();
+                                    //aspxFileHelper.FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
                                     //}
 

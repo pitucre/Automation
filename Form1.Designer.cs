@@ -152,22 +152,21 @@ namespace ForECC
             // 
             // btnConvertToCh
             // 
-            this.btnConvertToCh.Location = new System.Drawing.Point(11, 587);
+            this.btnConvertToCh.Location = new System.Drawing.Point(585, 585);
             this.btnConvertToCh.Name = "btnConvertToCh";
-            this.btnConvertToCh.Size = new System.Drawing.Size(138, 29);
-            this.btnConvertToCh.TabIndex = 15;
+            this.btnConvertToCh.Size = new System.Drawing.Size(181, 29);
+            this.btnConvertToCh.TabIndex = 16;
             this.btnConvertToCh.Text = "移动端标签替换为中文";
             this.btnConvertToCh.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnConvertToCh.UseVisualStyleBackColor = true;
-            this.btnConvertToCh.Click += new System.EventHandler(this.btnConvertToCh_Click);
             // 
             // ltBoxLogAll
             // 
             this.ltBoxLogAll.FormattingEnabled = true;
             this.ltBoxLogAll.ItemHeight = 17;
-            this.ltBoxLogAll.Location = new System.Drawing.Point(1113, 71);
+            this.ltBoxLogAll.Location = new System.Drawing.Point(19, 71);
             this.ltBoxLogAll.Name = "ltBoxLogAll";
-            this.ltBoxLogAll.Size = new System.Drawing.Size(239, 497);
+            this.ltBoxLogAll.Size = new System.Drawing.Size(1333, 497);
             this.ltBoxLogAll.TabIndex = 14;
             // 
             // lblCountAspx
@@ -212,7 +211,7 @@ namespace ForECC
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(1145, 34);
+            this.label11.Location = new System.Drawing.Point(19, 34);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(63, 17);
             this.label11.TabIndex = 5;
@@ -226,6 +225,7 @@ namespace ForECC
             this.label7.Size = new System.Drawing.Size(116, 17);
             this.label7.TabIndex = 5;
             this.label7.Text = "未发现表名的文件：";
+            this.label7.Visible = false;
             // 
             // ltBoxNoExistTableName
             // 
@@ -236,6 +236,7 @@ namespace ForECC
             this.ltBoxNoExistTableName.Name = "ltBoxNoExistTableName";
             this.ltBoxNoExistTableName.Size = new System.Drawing.Size(256, 497);
             this.ltBoxNoExistTableName.TabIndex = 4;
+            this.ltBoxNoExistTableName.Visible = false;
             // 
             // label6
             // 
@@ -257,7 +258,7 @@ namespace ForECC
             // 
             this.panel1.Controls.Add(this.ckBoxConvertFolder);
             this.panel1.Controls.Add(this.cmbConvertFolder);
-            this.panel1.Location = new System.Drawing.Point(583, 591);
+            this.panel1.Location = new System.Drawing.Point(204, 669);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(386, 29);
             this.panel1.TabIndex = 8;
@@ -301,6 +302,7 @@ namespace ForECC
             this.label4.Size = new System.Drawing.Size(140, 17);
             this.label4.TabIndex = 5;
             this.label4.Text = "未发现特征字符的文件：";
+            this.label4.Visible = false;
             // 
             // ltBoxNoExistString
             // 
@@ -311,6 +313,7 @@ namespace ForECC
             this.ltBoxNoExistString.Name = "ltBoxNoExistString";
             this.ltBoxNoExistString.Size = new System.Drawing.Size(256, 497);
             this.ltBoxNoExistString.TabIndex = 4;
+            this.ltBoxNoExistString.Visible = false;
             // 
             // label3
             // 
@@ -320,6 +323,7 @@ namespace ForECC
             this.label3.Size = new System.Drawing.Size(104, 17);
             this.label3.TabIndex = 5;
             this.label3.Text = "已更新过的文件：";
+            this.label3.Visible = false;
             // 
             // ltBoxConverted
             // 
@@ -330,6 +334,7 @@ namespace ForECC
             this.ltBoxConverted.Name = "ltBoxConverted";
             this.ltBoxConverted.Size = new System.Drawing.Size(256, 259);
             this.ltBoxConverted.TabIndex = 4;
+            this.ltBoxConverted.Visible = false;
             // 
             // label2
             // 
@@ -339,6 +344,7 @@ namespace ForECC
             this.label2.Size = new System.Drawing.Size(131, 17);
             this.label2.TabIndex = 5;
             this.label2.Text = "更新的Ashx文件名单：";
+            this.label2.Visible = false;
             // 
             // label10
             // 
@@ -348,6 +354,7 @@ namespace ForECC
             this.label10.Size = new System.Drawing.Size(131, 17);
             this.label10.TabIndex = 5;
             this.label10.Text = "更新的aspx文件名单：";
+            this.label10.Visible = false;
             // 
             // label1
             // 
@@ -357,6 +364,7 @@ namespace ForECC
             this.label1.Size = new System.Drawing.Size(115, 17);
             this.label1.TabIndex = 5;
             this.label1.Text = "更新的Js文件名单：";
+            this.label1.Visible = false;
             // 
             // ltBoxStoreDataService
             // 
@@ -367,6 +375,7 @@ namespace ForECC
             this.ltBoxStoreDataService.Name = "ltBoxStoreDataService";
             this.ltBoxStoreDataService.Size = new System.Drawing.Size(256, 174);
             this.ltBoxStoreDataService.TabIndex = 4;
+            this.ltBoxStoreDataService.Visible = false;
             // 
             // ltBoxAspx
             // 
@@ -377,6 +386,7 @@ namespace ForECC
             this.ltBoxAspx.Name = "ltBoxAspx";
             this.ltBoxAspx.Size = new System.Drawing.Size(256, 259);
             this.ltBoxAspx.TabIndex = 4;
+            this.ltBoxAspx.Visible = false;
             // 
             // ltBoxModules
             // 
@@ -387,14 +397,15 @@ namespace ForECC
             this.ltBoxModules.Name = "ltBoxModules";
             this.ltBoxModules.Size = new System.Drawing.Size(256, 174);
             this.ltBoxModules.TabIndex = 4;
+            this.ltBoxModules.Visible = false;
             this.ltBoxModules.SelectedIndexChanged += new System.EventHandler(this.ltBoxModules_SelectedIndexChanged);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(149, 585);
+            this.button3.Location = new System.Drawing.Point(199, 585);
             this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(181, 35);
+            this.button3.Size = new System.Drawing.Size(181, 29);
             this.button3.TabIndex = 3;
             this.button3.Text = "选择ECC文件夹进行自动变换";
             this.button3.UseVisualStyleBackColor = true;
@@ -402,9 +413,9 @@ namespace ForECC
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(372, 585);
+            this.button2.Location = new System.Drawing.Point(392, 585);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(156, 35);
+            this.button2.Size = new System.Drawing.Size(181, 29);
             this.button2.TabIndex = 2;
             this.button2.Text = "批量替换aspx文件";
             this.button2.UseVisualStyleBackColor = true;
@@ -412,9 +423,9 @@ namespace ForECC
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(149, 625);
+            this.button1.Location = new System.Drawing.Point(6, 585);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(181, 35);
+            this.button1.Size = new System.Drawing.Size(181, 29);
             this.button1.TabIndex = 2;
             this.button1.Text = "选择菜单文件生成菜单";
             this.button1.UseVisualStyleBackColor = true;

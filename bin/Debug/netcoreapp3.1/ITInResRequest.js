@@ -182,7 +182,7 @@
         YZSoft.bpm.src.ux.FormManager.openFormApplication(this.FormService, rec.data.Id, 'Read', Ext.apply({
             sender: me,
             title: '查看',
-            params: { tid: rec.data.ID },
+            params: { tid: rec.data.Id },
             listeners: {
                 submit: function (action, data) {
                     me.store.reload({
