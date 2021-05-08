@@ -8,7 +8,6 @@
     "additionalProbingPaths": [
       "C:\\Users\\bjliu\\.dotnet\\store\\|arch|\\|tfm|",
       "C:\\Users\\bjliu\\.nuget\\packages",
-      "E:\\Microsoft\\Xamarin\\NuGet",
       "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
     ],
     "configProperties": {

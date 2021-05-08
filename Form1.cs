@@ -322,7 +322,13 @@ namespace ForECC
             }
 
         }
-
+        /// <summary>
+        /// 自动化处理aspx文件
+        /// </summary>
+        /// <param name="strOriginFilePath"></param>
+        /// <param name="strProcessName"></param>
+        /// <param name="strProcessGroup"></param>
+        /// <param name="strProcessNameCN"></param>
 
         private void FormatAspxFile(string strOriginFilePath, string strProcessName, string strProcessGroup, string strProcessNameCN = "")
         {
@@ -417,13 +423,15 @@ namespace ForECC
 
                         if (line.Contains("getElementsByName", StringComparison.OrdinalIgnoreCase) && line.Contains("value", StringComparison.OrdinalIgnoreCase))
                         {
-                            line = line.Replace("document.getElementsByName", "$").Replace(").value", ").down('.yz-xform-field-ele').dom.value");
+                            line = line.Replace("document.getElementsByName", "Ext.get").Replace(").value", ").down('.yz-xform-field-ele').dom.value");
                         }
 
-                        if (line.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && line.Contains("innerHTML", StringComparison.OrdinalIgnoreCase))
-                        {
-                            line = line.Replace("document.getElementById", "Ext.get").Replace("\").innerHTML", ".yz-xform-field-ele\").html()");
-                        }
+                        //if (line.Contains("getElementsByName", StringComparison.OrdinalIgnoreCase) && !line.Contains("value", StringComparison.OrdinalIgnoreCase))
+                        //{
+                        //    line = line.Replace("document.getElementsByName", "Ext.get").Replace(");", ").down('.yz-xform-field-ele').dom;");
+                        //}
+
+
                         if (line.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && line.Contains("value", StringComparison.OrdinalIgnoreCase))
                         {
                             line = line.Replace("document.getElementById", "Ext.get").Replace(").value", ").down('.yz-xform-field-ele').dom.value");
@@ -431,6 +439,10 @@ namespace ForECC
                         if (line.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && line.Contains("innerText", StringComparison.OrdinalIgnoreCase))
                         {
                             line = line.Replace("document.getElementById", "$").Replace("\").innerText", ".yz-xform-field-ele\").html()");
+                        }
+                        if (line.Contains("getElementById", StringComparison.OrdinalIgnoreCase) && line.Contains("innerHTML", StringComparison.OrdinalIgnoreCase))
+                        {
+                            line = line.Replace("document.getElementById", "$").Replace("\").innerHTML", ".yz-xform-field-ele\").html()");
                         }
                         Console.WriteLine("注释语句删除");
                         strContent = strContent + line + Environment.NewLine;
@@ -447,6 +459,7 @@ namespace ForECC
             #region 删除审批意见模块
             //删除审批意见
             string strPattern = @"<table style=""MARGIN.*?>[\s\S]*?</table>";
+            //function excel.+{[\s\S]*?}\s
             //strPattern = @"<table.*?>[\s\S]*?<\/table>";
             foreach (Match match in Regex.Matches(strContent, strPattern))
                 if (match.Value.Contains("审批意见"))
@@ -493,12 +506,54 @@ namespace ForECC
 
                 strPattern = @"Excel/.*.xls";
                 string strDownloadFileName = "";
-                strDownloadFileName = Regex.Match(strContent, strPattern).Value;
 
-                strNewFunction = strNewFunction.Replace("&&&", strDownloadFileName);
+                //strDownloadFileName = Regex.Match(strContent, strPattern).Value;
+
+                //strNewFunction = strNewFunction.Replace("&&&", strDownloadFileName);
 
                 strPattern = @"function excel.+{[\s\S]+}///";//特意加///表示结尾，替换之前加上///
-                strContent = Regex.Replace(strContent, strPattern, strNewFunction);
+                strPattern = @"function excel.+{[\s\S]*?}\s";//修改了一下
+                strPattern = @"function excel[\s\S]*?{[\s\S]*?}\s";//修改了一下
+                //strContent = Regex.Replace(strContent, strPattern, strNewFunction);
+                foreach (Match match in Regex.Matches(strContent, strPattern))
+                {
+                    string strNewPattern = @"\w*?/Excel/.*.xls";
+                    strNewFunction = @"
+                                          Ext.require([""YZSoft.src.ux.File""]);
+                                          function$$$
+                                                {
+                                                 ###
+
+                                          params['Method'] = 'GenExcelReport';
+                                          params['ExcelFile'] = '~/YZModules/&&&';
+                                          params['outputType'] = 'Export';
+                                                    var pms = new Array();
+                                                    Ext.Object.each(params, function(key, val) {
+                                                        if (key != 'UserParamNames')
+                                                            pms.push(key);
+                                                    });
+                                          params['UserParamNames'] = pms.join(',');
+                                                YZSoft.src.ux.File.download(reportServiceUrl, params);
+                                            }
+                                           ";
+                    strDownloadFileName = Regex.Match(match.Value, strNewPattern).Value;//excel导出文件的名字
+
+
+                    strNewFunction = strNewFunction.Replace("&&&", strDownloadFileName);
+
+                    strNewPattern = @"\sexcel_[\w\W]*?\s";
+                    string strFunction = Regex.Match(match.Value, strNewPattern).Value;//函数的名字
+                    strNewFunction = strNewFunction.Replace("$$$", strFunction);
+                    strNewPattern = @"\svar reportServiceUrl[\w\W]*?params[\w\W]*?};";
+                    string strVar = Regex.Match(match.Value, strNewPattern).Value;//函数体变量的表达式
+
+                    strNewFunction = strNewFunction.Replace("###", strVar);
+
+                    strContent = strContent.Replace(match.Value, strNewFunction);
+
+
+
+                }
             }
 
             #endregion
@@ -551,6 +606,21 @@ namespace ForECC
                     iCompanyFlag = strContent.IndexOf("基本信息");
                     if (iCompanyFlag > 0)
                     {
+                        //colspan数减1逻辑
+                        strPattern = @"colspan=""[0-9]""[\s\S]*?""基本信息""";
+                        foreach (Match match in Regex.Matches(strContent, strPattern))
+                        {
+                            string strLongColspan = match.Value;//包含colspan的长字符串
+                            string strNewPattern = @"colspan=""[0-9]""";
+                            string strShortColspan = Regex.Match(strLongColspan, strNewPattern).Value;//包含colspan的短字符串
+                            strNewPattern = "[0-9]";
+                            int icolspan = Convert.ToInt16(Regex.Match(strLongColspan, strNewPattern).Value);
+                            string strNewShortColspan = strShortColspan.Replace((icolspan).ToString(), (icolspan - 1).ToString());//数字减1替换字符串
+                            string strNewLongColspan = strLongColspan.Replace(strShortColspan, strNewShortColspan);
+                            strContent = strContent.Replace(strLongColspan, strNewLongColspan);
+
+                        }
+
                         iCompanyNameStart = strContent.IndexOf("</tr", iCompanyFlag);
 
                         strFrontContent = strContent.Substring(0, iCompanyNameStart);
@@ -1393,9 +1463,12 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    //if (AspxFile.Name.Contains("ISContractApplication20.aspx"))
-                                    FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
-                                    FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    //if (AspxFile.Name.Contains("ITItemRequest1.aspx"))
+                                    {
+                                        FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                        FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    }
+
 
 
                                 }
@@ -1722,7 +1795,7 @@ namespace ForECC
             #region 运用正则表达式读取中文数字并进行处理
             //删除审批意见
             //string strPattern = @"<p.*?>[\w\W]*?</aspxform:[\w]+>";//提取从p开始的字段
-            string strPattern = @"[\s;][\u4e00-\u9fa5]+/?[\w\W]*?</aspxform:[\w]+>";//提取从p开始的字段
+            string strPattern = @"[\s;][\u4e00-\u9fa5]+/?[\w\W]*?</aspxform:[\w]+>";
             string strChinese = "";
             string strFragment = "";//提取的片段
             string strNewFragment = "";//要替换的的片段
@@ -1830,6 +1903,16 @@ namespace ForECC
         }
 
         private void ltBoxModules_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ltBoxLogAll_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

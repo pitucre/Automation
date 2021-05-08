@@ -110,6 +110,7 @@ namespace ForECC
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(1405, 787);
             this.tabControl1.TabIndex = 0;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // tPAuto
             // 
@@ -159,6 +160,7 @@ namespace ForECC
             this.btnConvertToCh.Text = "移动端标签替换为中文";
             this.btnConvertToCh.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnConvertToCh.UseVisualStyleBackColor = true;
+            this.btnConvertToCh.Click += new System.EventHandler(this.btnConvertToCh_Click);
             // 
             // ltBoxLogAll
             // 
@@ -168,6 +170,7 @@ namespace ForECC
             this.ltBoxLogAll.Name = "ltBoxLogAll";
             this.ltBoxLogAll.Size = new System.Drawing.Size(1333, 497);
             this.ltBoxLogAll.TabIndex = 14;
+            this.ltBoxLogAll.SelectedIndexChanged += new System.EventHandler(this.ltBoxLogAll_SelectedIndexChanged);
             // 
             // lblCountAspx
             // 
@@ -203,7 +206,7 @@ namespace ForECC
             // 
             // txtBoxStatus
             // 
-            this.txtBoxStatus.Location = new System.Drawing.Point(372, 629);
+            this.txtBoxStatus.Location = new System.Drawing.Point(411, 719);
             this.txtBoxStatus.Name = "txtBoxStatus";
             this.txtBoxStatus.Size = new System.Drawing.Size(315, 23);
             this.txtBoxStatus.TabIndex = 10;
@@ -258,7 +261,7 @@ namespace ForECC
             // 
             this.panel1.Controls.Add(this.ckBoxConvertFolder);
             this.panel1.Controls.Add(this.cmbConvertFolder);
-            this.panel1.Location = new System.Drawing.Point(204, 669);
+            this.panel1.Location = new System.Drawing.Point(19, 713);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(386, 29);
             this.panel1.TabIndex = 8;
