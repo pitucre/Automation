@@ -25,7 +25,7 @@ namespace ForECC
             InitializeComponent();
         }
 
-
+        int icountTotal1 = 0, iCountTotal2 = 0;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -388,7 +388,8 @@ namespace ForECC
             using (StreamReader file = new StreamReader(strOriginFilePath, strFileEncoding))//超级重要，C#字符串默认是Unicode，必须以Unicode格式打开
             //using (StreamReader file = new StreamReader(strOriginFilePath))
             {
-
+                int icount1=0;
+                int icount2=0;
                 while ((line = file.ReadLine()) != null)
                 {
                     //line = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
@@ -414,7 +415,24 @@ namespace ForECC
                             //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
                         }
 
-                        //
+                        if (line.Contains("<aspxform:XAttachments ") && !line.Contains("AllowDownload", StringComparison.OrdinalIgnoreCase))//批量加背景
+                        {
+                            line = line.Replace("<aspxform:XAttachments ", "<aspxfrom:XAttachments AllowDownload=\"True\" ").Trim();
+                            //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
+                            icount1++;
+                            icountTotal1++;
+                            
+                        }
+
+                        if (line.Contains("</aspxform:XAttachments>") && !line.Contains("</aspxfrom:XAttachments>", StringComparison.OrdinalIgnoreCase))//批量加背景
+                        {
+                            line = line.Replace("</aspxform:XAttachments>", "</aspxfrom:XAttachments>").Trim();
+                            icount2++;
+                            //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
+                            iCountTotal2++;
+                        }
+
+
                         if (line.Contains("<table ") && !line.Contains("width", StringComparison.OrdinalIgnoreCase))//批量加背景
                         {
                             line = line.Replace("<table ", "<table width=\"95%\"").Trim();
@@ -446,6 +464,12 @@ namespace ForECC
                         }
                         Console.WriteLine("注释语句删除");
                         strContent = strContent + line + Environment.NewLine;
+
+                        //替换预览附件概念
+                        //strContent = strContent.Replace("<aspxfrom:XAttachments", "<aspxfrom:XAttachments AllowDownload=\"True\"").Replace("</aspxform:XAttachments>", "</aspxfrom:XAttachments>");
+
+                        //strContent = strContent.Replace("<aspxfrom:XAttachments", "<aspxfrom:XAttachments AllowDownload=\"True\"").Replace("</aspxform:XAttachments>", "</aspxfrom:XAttachments>");
+
                     }
 
                     //counter++;
@@ -453,6 +477,13 @@ namespace ForECC
 
                 file.Close();
                 fsr.Close();
+
+                if (icount1!=icount2)
+                {
+                    //MessageBox.Show("icout1=" + icount1 + "icount2:" + icount2);
+                    ltboxtemp.Items.Add(strOriginFilePath);
+                }
+                
 
             }
             #endregion
@@ -559,7 +590,7 @@ namespace ForECC
             #endregion
 
             #region 获取信息后添加部门信息模块
-            if (!strContent.Contains("XLabe66"))//如果没有替换过
+            if (!strContent.Contains("XLabe66"))//如果没有替换过 
             {
                 strTag = "BPMCEDATA:";
                 iTableNameStart = strContent.IndexOf(strTag);
@@ -625,13 +656,13 @@ namespace ForECC
 
                         strFrontContent = strContent.Substring(0, iCompanyNameStart);
                         strBelowContent = strContent.Substring(iCompanyNameStart, strContent.Length - iCompanyNameStart);
-
-                        strNewContent = "<%--converted--%>" + Environment.NewLine + strFrontContent + Environment.NewLine + strAddContent + strBelowContent;
+                        //为了使用在线预览控件追加的引用
+                        strContent = "<%--converted--%>" + Environment.NewLine + strFrontContent + Environment.NewLine + strAddContent + strBelowContent;
                         //strNewContent = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(strNewContent)));
                     }
                     else
                     {
-                        strNewContent = strContent;
+                        //strContent = strContent;
                         //MessageBox.Show("没有发现字符串基本信息");
                         WriteLog(strProcessName + ".aspx", ltBoxNoExistString, "没有发现字符串基本信息,编码格式为" + strFileEncoding);
 
@@ -645,6 +676,7 @@ namespace ForECC
 
             }
 
+
             #endregion
             //正则查找
 
@@ -654,8 +686,168 @@ namespace ForECC
             using (StreamWriter sw = new StreamWriter(fsw, strFileEncoding))
             //using (StreamWriter sw = new StreamWriter(strOriginFilePath))
             {
+                //在线预览功能已经添加标志位
+                string strHeadInfoAdd = "<%@ Register TagPrefix=\"aspxfrom\" Namespace=\"XFormDesigner.WebControls.Web.UI\" Assembly=\"XFormDesigner.WebControls\" %>";
+                strContent = "<%--convertedOnlinePreview--%>" + Environment.NewLine+strHeadInfoAdd+Environment.NewLine + strContent;
+                sw.Write(strContent);
 
-                sw.Write(strNewContent);
+                //foreach (string s in strNewContent.Split("&&&"))
+                //{
+                //    sw.WriteLine(s);
+
+                //}
+                //sw.WriteAsync(strNewContent);
+                sw.Close();
+                fsw.Close();
+
+                WriteLog(strProcessName + ".aspx", ltBoxAspx);
+
+                //this.ltBoxModules.Items.Add(strProcessName + ".js");
+
+                //string logFileName = System.Environment.GetEnvironmentVariable("TEMP") + "\\" + Path.GetFileNameWithoutExtension(Application.ExecutablePath) + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+                //using (TextWriter logFile = TextWriter.Synchronized(File.AppendText(logFileName)))
+                //{
+                //    logFile.WriteLine(DateTime.Now + "\t" + strProcessName + ".js" + "\r\n");
+                //    logFile.Flush();
+                //    logFile.Close();
+                //}
+            }
+
+
+
+        }
+
+
+        private void FormatAspxFileAddOnlinePreview(string strOriginFilePath, string strProcessName, string strProcessGroup, string strProcessNameCN = "")
+        {
+            if (strProcessName.Contains("_backup"))//如果已经备份的文件不再处理
+            {
+                return;
+            }
+
+            int iTableNameStart, iTableNameEnd;//数据库表的位置
+            string strTableName = "";//数据库表名
+            string line;
+            string strContent = "";//文本文件内容
+
+            int iCompanyFlag;
+            int iCompanyNameStart, iCompanyNameEnd;//记录Company出现的位置
+
+            string strReplaceContent = "";
+
+            string strFrontContent = "";//上半部分内容
+            string strBelowContent = "";//下班部分内容
+
+            string strNewContent = "";//用于存储新内容
+
+            string strTag = "";
+
+            FileEncoding fEncoding = new FileEncoding();
+
+            if (!File.Exists(strOriginFilePath + "_backup"))
+            {
+                File.Copy(strOriginFilePath, strOriginFilePath + "_backup");//备份文件
+            }
+            #region 循环替换标签透明和修改JS语法模块
+
+            //4种编码  
+            Encoding utf8 = Encoding.UTF8;
+            Encoding utf16 = Encoding.Unicode;
+            //Encoding gb = Encoding.GetEncoding("gbk");
+            //Encoding b5 = Encoding.GetEncoding("big5");
+
+            Encoding strFileEncoding;
+            strFileEncoding = FileEncoding.GetEncoding(strOriginFilePath);
+            FileStream fsr = new FileStream(strOriginFilePath, FileMode.Open, FileAccess.Read);
+            using (StreamReader file = new StreamReader(strOriginFilePath, strFileEncoding))//超级重要，C#字符串默认是Unicode，必须以Unicode格式打开
+            //using (StreamReader file = new StreamReader(strOriginFilePath))
+            {
+                int icount1 = 0;
+                int icount2 = 0;
+                while ((line = file.ReadLine()) != null)
+                {
+                    //line = utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
+                    if (line.Contains("--ConvertedOnliePreview"))//如果文件已经更新过跳出逻辑
+                    {
+                        //ltBoxConverted.Items.Add(strProcessName + ".ashx文件已更新过！");
+                        WriteLog(strProcessName, ltBoxAspx, ".aspx文件已更新过！");
+
+                        file.Close();
+                        fsr.Close();
+                        return;
+                    }
+                    //特殊注释删掉
+                    if (line.Trim().Length >= 4 && line.Trim().Substring(0, 4) == "<%--")
+                    {
+
+                    }
+                    else
+                    {
+
+
+                        if (line.Contains("<aspxform:XAttachments ") && !line.Contains("AllowDownload", StringComparison.OrdinalIgnoreCase))//批量加背景
+                        {
+                            line = line.Replace("<aspxform:XAttachments ", "<aspxfrom:XAttachments AllowDownload=\"True\" ").Trim();
+                            //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
+                            icount1++;
+                            icountTotal1++;
+
+                        }
+
+                        if (line.Contains("</aspxform:XAttachments>") && !line.Contains("</aspxfrom:XAttachments>", StringComparison.OrdinalIgnoreCase))//批量加背景
+                        {
+                            line = line.Replace("</aspxform:XAttachments>", "</aspxfrom:XAttachments>").Trim();
+                            icount2++;
+                            //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
+                            iCountTotal2++;
+                        }
+
+
+
+
+                 
+                        strContent = strContent + line + Environment.NewLine;
+
+
+                     
+                        //替换预览附件概念
+                        //strContent = strContent.Replace("<aspxfrom:XAttachments", "<aspxfrom:XAttachments AllowDownload=\"True\"").Replace("</aspxform:XAttachments>", "</aspxfrom:XAttachments>");
+
+                        //strContent = strContent.Replace("<aspxfrom:XAttachments", "<aspxfrom:XAttachments AllowDownload=\"True\"").Replace("</aspxform:XAttachments>", "</aspxfrom:XAttachments>");
+
+                    }
+
+                    //counter++;
+                }
+
+                file.Close();
+                fsr.Close();
+
+                if (icount1 != icount2)
+                {
+                    //MessageBox.Show("icout1=" + icount1 + "icount2:" + icount2);
+                    ltboxtemp.Items.Add(strOriginFilePath);
+                }
+
+
+            }
+            #endregion
+
+
+
+
+
+
+
+            FileStream fsw = new FileStream(strOriginFilePath, FileMode.Create, FileAccess.Write);//FileMode.Create 复制之前清空文件防止编码问题导致错误
+            using (StreamWriter sw = new StreamWriter(fsw, strFileEncoding))
+            //using (StreamWriter sw = new StreamWriter(strOriginFilePath))
+            {
+                //为了使用在线预览控件追加的引用
+                string strHeadInfoAdd = "<%@ Register TagPrefix=\"aspxfrom\" Namespace=\"XFormDesigner.WebControls.Web.UI\" Assembly=\"XFormDesigner.WebControls\" %>";
+                strContent = "<%--ConvertedOnliePreview--%>" + Environment.NewLine + strHeadInfoAdd + Environment.NewLine + strContent;
+
+                sw.Write(strContent);
 
                 //foreach (string s in strNewContent.Split("&&&"))
                 //{
@@ -1461,11 +1653,18 @@ namespace ForECC
                             foreach (DirectoryInfo ECCFolder in TheFolder.GetDirectories("*", SearchOption.AllDirectories))
                             {
 
-                                foreach (FileInfo AspxFile in ECCFolder.GetFiles())
+                                foreach (FileInfo AspxFile in ECCFolder.GetFiles("*.aspx"))
                                 {
-                                    //if (AspxFile.Name.Contains("ITItemRequest1.aspx"))
+
+                                    if (AspxFile.Name.Contains(".uf")|| AspxFile.Name.Contains(".uf.js") )
+                                    {
+                                        continue;//如果是
+                                    }
+                                    if (AspxFile.Name.Contains("PurExperimentTyre.aspx"))
                                     {
                                         FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+
+
                                         FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
                                     }
 
@@ -1480,7 +1679,9 @@ namespace ForECC
                         }
 
                     }
-
+                    MessageBox.Show("left:" + icountTotal1 + "  right:" + iCountTotal2);
+                    icountTotal1 = 0;
+                    iCountTotal2 = 0;
                     lblCountAspx.Text = ltBoxAspx.Items.Count.ToString() + "个";
 
                     //lblCountAshxFile.Text = ltBoxStoreDataService.Items.Count.ToString() + "个";
@@ -1910,6 +2111,63 @@ namespace ForECC
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnOnlinePreview_Click(object sender, EventArgs e)
+        {
+            if (folderBD_ECC.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (string.IsNullOrEmpty(folderBD_ECC.SelectedPath))
+                {
+                    MessageBox.Show("您没有选择任何文件夹！");
+                }
+                else
+                {
+                    bool bFind = false;
+                    //C#遍历指定文件夹中的所有文件 
+                    DirectoryInfo TheFolder = new DirectoryInfo(folderBD_ECC.SelectedPath);
+
+                    //string strPatternFolder = "LOGProcess";//只有这个文件夹才替换
+                    //遍历文件夹
+                    foreach (DirectoryInfo NextFolder in TheFolder.GetDirectories("*", SearchOption.AllDirectories))
+                    {
+
+                        if (NextFolder.Name == "XForm")//如果找到 XForm,开始进行循环处理
+                        {
+                            TheFolder = new DirectoryInfo(NextFolder.FullName);
+                            foreach (DirectoryInfo ECCFolder in TheFolder.GetDirectories("*", SearchOption.AllDirectories))
+                            {
+
+                                foreach (FileInfo AspxFile in ECCFolder.GetFiles())
+                                {
+                                    // if (AspxFile.Name.Equals("Apply CarOrMeal(china)10.aspx"))
+                                    //{
+                                    //AspxFileHelper aspxFileHelper = new AspxFileHelper();
+                                    //aspxFileHelper.FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                    FormatAspxFileAddOnlinePreview(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+
+                                    //}
+
+                                }
+
+
+                            }
+                            bFind = true;
+                            break;
+                        }
+
+                    }
+
+                    lblCountAspx.Text = ltBoxAspx.Items.Count.ToString() + "个";
+
+                    //lblCountAshxFile.Text = ltBoxStoreDataService.Items.Count.ToString() + "个";
+                    if (bFind == false)
+                    {
+                        MessageBox.Show("没有找到XForm文件夹，请确认是否选择正确!");
+                    }
+                }
+
+            }
         }
 
         private void ltBoxLogAll_SelectedIndexChanged(object sender, EventArgs e)
