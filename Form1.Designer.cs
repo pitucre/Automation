@@ -31,9 +31,10 @@ namespace ForECC
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tPAuto = new System.Windows.Forms.TabPage();
+            this.ltBoxLogAll = new System.Windows.Forms.ListBox();
+            this.btnOnlinePreview = new System.Windows.Forms.Button();
             this.ltboxtemp = new System.Windows.Forms.ListBox();
             this.btnConvertToCh = new System.Windows.Forms.Button();
-            this.ltBoxLogAll = new System.Windows.Forms.ListBox();
             this.lblCountAspx = new System.Windows.Forms.Label();
             this.lblCountAshxFile = new System.Windows.Forms.Label();
             this.lblCountJSFile = new System.Windows.Forms.Label();
@@ -94,7 +95,7 @@ namespace ForECC
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.textBox4 = new System.Windows.Forms.TextBox();
-            this.btnOnlinePreview = new System.Windows.Forms.Button();
+            this.btnConvertToChAdd = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tPAuto.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -116,10 +117,11 @@ namespace ForECC
             // 
             // tPAuto
             // 
+            this.tPAuto.Controls.Add(this.btnConvertToChAdd);
+            this.tPAuto.Controls.Add(this.ltBoxLogAll);
             this.tPAuto.Controls.Add(this.btnOnlinePreview);
             this.tPAuto.Controls.Add(this.ltboxtemp);
             this.tPAuto.Controls.Add(this.btnConvertToCh);
-            this.tPAuto.Controls.Add(this.ltBoxLogAll);
             this.tPAuto.Controls.Add(this.lblCountAspx);
             this.tPAuto.Controls.Add(this.lblCountAshxFile);
             this.tPAuto.Controls.Add(this.lblCountJSFile);
@@ -155,6 +157,25 @@ namespace ForECC
             this.tPAuto.Text = "自动转换";
             this.tPAuto.UseVisualStyleBackColor = true;
             // 
+            // ltBoxLogAll
+            // 
+            this.ltBoxLogAll.FormattingEnabled = true;
+            this.ltBoxLogAll.ItemHeight = 17;
+            this.ltBoxLogAll.Location = new System.Drawing.Point(19, 55);
+            this.ltBoxLogAll.Name = "ltBoxLogAll";
+            this.ltBoxLogAll.Size = new System.Drawing.Size(1345, 497);
+            this.ltBoxLogAll.TabIndex = 20;
+            // 
+            // btnOnlinePreview
+            // 
+            this.btnOnlinePreview.Location = new System.Drawing.Point(392, 630);
+            this.btnOnlinePreview.Name = "btnOnlinePreview";
+            this.btnOnlinePreview.Size = new System.Drawing.Size(181, 29);
+            this.btnOnlinePreview.TabIndex = 18;
+            this.btnOnlinePreview.Text = "增加附件在线预览功能";
+            this.btnOnlinePreview.UseVisualStyleBackColor = true;
+            this.btnOnlinePreview.Click += new System.EventHandler(this.btnOnlinePreview_Click);
+            // 
             // ltboxtemp
             // 
             this.ltboxtemp.FormattingEnabled = true;
@@ -174,16 +195,6 @@ namespace ForECC
             this.btnConvertToCh.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnConvertToCh.UseVisualStyleBackColor = true;
             this.btnConvertToCh.Click += new System.EventHandler(this.btnConvertToCh_Click);
-            // 
-            // ltBoxLogAll
-            // 
-            this.ltBoxLogAll.FormattingEnabled = true;
-            this.ltBoxLogAll.ItemHeight = 17;
-            this.ltBoxLogAll.Location = new System.Drawing.Point(19, 71);
-            this.ltBoxLogAll.Name = "ltBoxLogAll";
-            this.ltBoxLogAll.Size = new System.Drawing.Size(1124, 497);
-            this.ltBoxLogAll.TabIndex = 14;
-            this.ltBoxLogAll.SelectedIndexChanged += new System.EventHandler(this.ltBoxLogAll_SelectedIndexChanged);
             // 
             // lblCountAspx
             // 
@@ -725,15 +736,16 @@ namespace ForECC
             this.textBox4.Size = new System.Drawing.Size(134, 23);
             this.textBox4.TabIndex = 1;
             // 
-            // btnOnlinePreview
+            // btnConvertToChAdd
             // 
-            this.btnOnlinePreview.Location = new System.Drawing.Point(392, 630);
-            this.btnOnlinePreview.Name = "btnOnlinePreview";
-            this.btnOnlinePreview.Size = new System.Drawing.Size(181, 29);
-            this.btnOnlinePreview.TabIndex = 18;
-            this.btnOnlinePreview.Text = "增加附件在线预览功能";
-            this.btnOnlinePreview.UseVisualStyleBackColor = true;
-            this.btnOnlinePreview.Click += new System.EventHandler(this.btnOnlinePreview_Click);
+            this.btnConvertToChAdd.Location = new System.Drawing.Point(585, 630);
+            this.btnConvertToChAdd.Name = "btnConvertToChAdd";
+            this.btnConvertToChAdd.Size = new System.Drawing.Size(195, 29);
+            this.btnConvertToChAdd.TabIndex = 21;
+            this.btnConvertToChAdd.Text = "移动端标签替换为中文补充替换";
+            this.btnConvertToChAdd.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnConvertToChAdd.UseVisualStyleBackColor = true;
+            this.btnConvertToChAdd.Click += new System.EventHandler(this.button7_Click);
             // 
             // Form1
             // 
@@ -802,7 +814,6 @@ namespace ForECC
         private System.Windows.Forms.Label label10;
         public System.Windows.Forms.ListBox ltBoxAspx;
         private System.Windows.Forms.Label lblCountAspx;
-        public System.Windows.Forms.ListBox ltBoxLogAll;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
@@ -825,6 +836,8 @@ namespace ForECC
         private System.Windows.Forms.Button btnConvertToCh;
         private System.Windows.Forms.ListBox ltboxtemp;
         private System.Windows.Forms.Button btnOnlinePreview;
+        public System.Windows.Forms.ListBox ltBoxLogAll;
+        private System.Windows.Forms.Button btnConvertToChAdd;
     }
 }
 
