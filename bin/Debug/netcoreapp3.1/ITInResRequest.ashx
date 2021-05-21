@@ -95,14 +95,23 @@ public class YZProductionDeviceServices : YZServiceHandler
             //&&QuickSearch
         }
 
-        //应用记录权限-只显示有权查看的记录
+            //应用记录权限-只显示有权查看的记录
 
         string loginuser = YZAuthHelper.LoginUserAccount;
+        User user = new User();
+        using (BPMConnection cn = new BPMConnection())
+        {
+            cn.WebOpen();
+
+            //获得当前用户
+            user.Open(cn, loginuser);
+        }
+        string SID = user.SID;
 
         //判断是否是管理员
         string str_group1 = "";
 
-        string str_sql = "select  count(groupname) as a  from  BPMSecurityGroupMembers where SID=(select SID from BPMSysUsers where Account='" + loginuser + "') and groupname='Administrators' ";
+        string str_sql = "select  count(groupname) as a  from  BPMSecurityGroupMembers where SID='" + SID + "' and groupname='Administrators' ";
         System.Data.SqlClient.SqlDataReader dr = SqlHelper.ExecuteReader(System.Configuration.ConfigurationManager.ConnectionStrings["BPMDB"].ToString(), System.Data.CommandType.Text, str_sql);
         if (dr.Read())
         {
@@ -113,7 +122,7 @@ public class YZProductionDeviceServices : YZServiceHandler
         //判断是否再看所有组
         string str_group2 = "";
 
-        string str_sql2 = "select  count(groupname) as b  from  BPMSecurityGroupMembers where SID=(select SID from BPMSysUsers where Account='" + loginuser + "') and groupname='费用支出申请看所有' ";
+        string str_sql2 = "select  count(groupname) as b  from  BPMSecurityGroupMembers where SID='" + SID + "' and groupname='' ";
         System.Data.SqlClient.SqlDataReader dr2 = SqlHelper.ExecuteReader(System.Configuration.ConfigurationManager.ConnectionStrings["BPMDB"].ToString(), System.Data.CommandType.Text, str_sql2);
         if (dr2.Read())
         {

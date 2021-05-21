@@ -1666,6 +1666,9 @@ namespace ForECC
 
 
                                         FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                        FormatAspxFileAddOnlinePreview(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                                                            
+                                        FormatAspxFileConvertLableNameToCHAdd(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
                                     }
 
 
@@ -2150,7 +2153,7 @@ namespace ForECC
             using (StreamReader file = new StreamReader(strOriginFilePath, strFileEncoding))//超级重要，C#字符串默认是Unicode，必须以Unicode格式打开
 
             {
-
+                bool bJsFunction = false;
                 while ((line = file.ReadLine()) != null)
                 {
 
@@ -2182,6 +2185,22 @@ namespace ForECC
                             line = line.Replace("HiddenExpress=\"1 == 1\"", "HiddenExpress=\"1 == 1\" FieldName=\"桥接属性\"");
                         }
 
+                        #region 批量添加函数
+                        //批量添加函数
+
+
+                        //if (line.Trim()== "</script>"&& bJsFunction==false)//如果已经替换过就不替换了
+                        //{
+                        //    bJsFunction = true;//
+                        //    string strJSFunction = @"/*function GetDateFromDateTime(dElement) {
+                        //                return dElement.toString().substring(0, 10);
+                        //            }*/
+                        //            </script>
+                        //            ";
+                        //    line = line.Replace("</script>", strJSFunction);
+                        //}
+                        #endregion
+
                         Console.WriteLine("注释语句删除");
                         strContent = strContent + line + Environment.NewLine;
                     }
@@ -2193,113 +2212,7 @@ namespace ForECC
 
             }
             #endregion
-
-            #region 运用正则表达式读取中文数字并进行处理
-            //删除审批意见
-            //string strPattern = @"<p.*?>[\w\W]*?</aspxform:[\w]+>";//提取从p开始的字段
-            string strPattern = @"[\s;][\u4e00-\u9fa5]+/?[\w\W]*?</aspxform:[\w]+>";
-            string strChinese = "";
-            string strFragment = "";//提取的片段
-            string strNewFragment = "";//要替换的的片段
-            string strControl = "";//控件
-            foreach (Match match in Regex.Matches(strContent, strPattern))
-            {
-                strFragment = match.Value;
-
-                if (Regex.IsMatch(strFragment, @"[\u4e00-\u9fa5]"))//判断里面是否有汉字
-                {
-                    //如果已经替换过的话跳出循环
-                    if (strFragment.Contains("FieldName", StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-                    strPattern = @"<aspxform:[\w]+";//获取控件名字
-                    foreach (Match matchControl in Regex.Matches(strFragment, strPattern))
-                    {
-                        strControl = matchControl.Value;
-
-                        break;
-
-                    }
-                    if (strControl.Contains("CheckBox", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
-                    {
-                        continue;
-                    }
-                    if (strControl.Contains("XRequiredFieldValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
-                    {
-                        continue;
-                    }
-                    if (strControl.Contains("XCompareValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
-                    {
-                        continue;
-                    }
-                    if (strControl.Contains("XRegularExpressionValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
-                    {
-                        continue;
-                    }
-                    if (strControl.Contains("XRangeValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
-                    {
-                        continue;
-                    }
-                    if (strControl.Contains("XCustomValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
-                    {
-                        continue;
-                    }
-                    //XCompareValidator1 XRangeValidator1 XCustomValidator1
-                    strPattern = "[\u4e00-\u9fa5]+";//是否有汉字正则表达式
-                    strPattern = "(\\d?[\u4e00-\u9fa5]+/?)+";//是否有汉字正则表达式
-                    foreach (Match matchChinese in Regex.Matches(strFragment, strPattern))
-                    {
-                        strChinese = matchChinese.Value;
-                        if (strFragment.Contains("单号"))
-                        {
-                            if (strChinese == "单号")
-                            {
-                                break;//取到单号汉字就跳出了
-                            }
-                        }
-                        else
-                        {
-                            break;
-
-                        }
-
-
-                    }
-                    if (!string.IsNullOrEmpty(strControl))
-                    {
-                        strNewFragment = strFragment.Replace(strControl, strControl + " FieldName=\"" + strChinese + "\" ");
-
-                        strContent = strContent.Replace(strFragment, strNewFragment);
-                    }
-
-                }
-
-            }
-
-            #region 批量添加函数
-            //批量添加函数
-            string strJSFunction = @"function GetDateFromDateTime(dElement) {
-                                        return dElement.toString().substring(0, 10);
-                                    }
-                                    </script>
-                                    ";
-
-            if (!strContent.Contains("GetDateFromDateTime"))
-            {
-                strContent = strContent.Replace("</script>", strJSFunction);
-            }
-            #endregion
             strNewContent = "<%--ConvertedConvertedConverted--%>" + Environment.NewLine + strContent;//标记是否已经替换过
-
-
-            #endregion
-
-
-
-
-
-
 
             FileStream fsw = new FileStream(strOriginFilePath, FileMode.Create, FileAccess.Write);//FileMode.Create 复制之前清空文件防止编码问题导致错误
             using (StreamWriter sw = new StreamWriter(fsw, strFileEncoding))
@@ -2414,7 +2327,7 @@ namespace ForECC
 
                                 foreach (FileInfo AspxFile in ECCFolder.GetFiles())
                                 {
-                                    //if (AspxFile.Name.Contains("ITInResRequest"))
+                                    //if (AspxFile.Name.Contains("FISalesContractApplication10.aspx"))
                                     {
                                         FormatAspxFileConvertLableNameToCHAdd(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
