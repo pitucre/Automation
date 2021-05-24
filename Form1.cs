@@ -607,8 +607,6 @@ namespace ForECC
                         //要添加的下面的部门替换片段
                         string strMendContent = @"
                                         <aspxform:XPositionMap id=""XPositionMap1"" runat=""server"" DataMap=""OUName->BPMCEDATA:{0}.CompanyName; ParentOUName->BPMCEDATA:{0}.{1}"" OULevel=""2级部门""></aspxform:XPositionMap>
-                              <aspxform:XLabel BackColor=""Transparent"" id=""XLabe33"" runat=""server"" XDataBind=""BPMCEDATA: ISECCJDEUerInformation_M.Dept"" text=""Label"" ValueToDisplayText Value HiddenExpress=""1 == 1"" ></aspxform:XLabel>
-
                     ";
 
                         strPattern = @"\.[a-zA-Z]*Dept[a-zA-Z]*";
@@ -2353,6 +2351,11 @@ namespace ForECC
                 }
 
             }
+        }
+
+        private void ltBoxLogAll_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+
         }
 
         private void ltBoxLogAll_SelectedIndexChanged(object sender, EventArgs e)

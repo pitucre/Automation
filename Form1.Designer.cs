@@ -31,6 +31,7 @@ namespace ForECC
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tPAuto = new System.Windows.Forms.TabPage();
+            this.btnConvertToChAdd = new System.Windows.Forms.Button();
             this.ltBoxLogAll = new System.Windows.Forms.ListBox();
             this.btnOnlinePreview = new System.Windows.Forms.Button();
             this.ltboxtemp = new System.Windows.Forms.ListBox();
@@ -95,7 +96,6 @@ namespace ForECC
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.textBox4 = new System.Windows.Forms.TextBox();
-            this.btnConvertToChAdd = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tPAuto.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -157,6 +157,17 @@ namespace ForECC
             this.tPAuto.Text = "自动转换";
             this.tPAuto.UseVisualStyleBackColor = true;
             // 
+            // btnConvertToChAdd
+            // 
+            this.btnConvertToChAdd.Location = new System.Drawing.Point(585, 630);
+            this.btnConvertToChAdd.Name = "btnConvertToChAdd";
+            this.btnConvertToChAdd.Size = new System.Drawing.Size(195, 29);
+            this.btnConvertToChAdd.TabIndex = 21;
+            this.btnConvertToChAdd.Text = "移动端标签替换为中文补充替换";
+            this.btnConvertToChAdd.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnConvertToChAdd.UseVisualStyleBackColor = true;
+            this.btnConvertToChAdd.Click += new System.EventHandler(this.button7_Click);
+            // 
             // ltBoxLogAll
             // 
             this.ltBoxLogAll.FormattingEnabled = true;
@@ -165,6 +176,7 @@ namespace ForECC
             this.ltBoxLogAll.Name = "ltBoxLogAll";
             this.ltBoxLogAll.Size = new System.Drawing.Size(1345, 497);
             this.ltBoxLogAll.TabIndex = 20;
+            this.ltBoxLogAll.SelectedIndexChanged += new System.EventHandler(this.ltBoxLogAll_SelectedIndexChanged_1);
             // 
             // btnOnlinePreview
             // 
@@ -735,17 +747,6 @@ namespace ForECC
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(134, 23);
             this.textBox4.TabIndex = 1;
-            // 
-            // btnConvertToChAdd
-            // 
-            this.btnConvertToChAdd.Location = new System.Drawing.Point(585, 630);
-            this.btnConvertToChAdd.Name = "btnConvertToChAdd";
-            this.btnConvertToChAdd.Size = new System.Drawing.Size(195, 29);
-            this.btnConvertToChAdd.TabIndex = 21;
-            this.btnConvertToChAdd.Text = "移动端标签替换为中文补充替换";
-            this.btnConvertToChAdd.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.btnConvertToChAdd.UseVisualStyleBackColor = true;
-            this.btnConvertToChAdd.Click += new System.EventHandler(this.button7_Click);
             // 
             // Form1
             // 
