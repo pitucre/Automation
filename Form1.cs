@@ -409,36 +409,76 @@ namespace ForECC
                     }
                     else
                     {
+                        #region 批量设置label背景为透明
+                        //批量设置label背景为透明
                         if (line.Contains("<aspxform:XLabel ") && !line.Contains("BackColor", StringComparison.OrdinalIgnoreCase))//批量加背景
                         {
                             line = line.Replace("<aspxform:XLabel ", "<aspxform:XLabel BackColor=\"Transparent\" ").Trim();
                             //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
                         }
+                        #endregion
 
-                        if (line.Contains("<aspxform:XAttachments ") && !line.Contains("AllowDownload", StringComparison.OrdinalIgnoreCase))//批量加背景
-                        {
-                            line = line.Replace("<aspxform:XAttachments ", "<aspxfrom:XAttachments AllowDownload=\"True\" ").Trim();
-                            //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
-                            icount1++;
-                            icountTotal1++;
+                        #region 批量添加在线预览功能
+                        //批量添加在线预览功能
+                        //if (line.Contains("<aspxform:XAttachments ") && !line.Contains("AllowDownload", StringComparison.OrdinalIgnoreCase))//批量加背景
+                        //{
+                        //    line = line.Replace("<aspxform:XAttachments ", "<aspxfrom:XAttachments AllowDownload=\"True\" ").Trim();
+                        //    //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
+                        //    icount1++;
+                        //    icountTotal1++;
 
-                        }
+                        //}
 
-                        if (line.Contains("</aspxform:XAttachments>") && !line.Contains("</aspxfrom:XAttachments>", StringComparison.OrdinalIgnoreCase))//批量加背景
-                        {
-                            line = line.Replace("</aspxform:XAttachments>", "</aspxfrom:XAttachments>").Trim();
-                            icount2++;
-                            //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
-                            iCountTotal2++;
-                        }
+                        //if (line.Contains("</aspxform:XAttachments>") && !line.Contains("</aspxfrom:XAttachments>", StringComparison.OrdinalIgnoreCase))//批量加背景
+                        //{
+                        //    line = line.Replace("</aspxform:XAttachments>", "</aspxfrom:XAttachments>").Trim();
+                        //    icount2++;
+                        //    //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
+                        //    iCountTotal2++;
+                        //}
+                        #endregion
 
-
-                        if (line.Contains("<table ") && !line.Contains("width", StringComparison.OrdinalIgnoreCase))//批量加背景
+                        #region 批量设置table为95%
+                        //批量设置table为95%
+                        if (line.Contains("<table ") && !line.Contains("width", StringComparison.OrdinalIgnoreCase))//
                         {
                             line = line.Replace("<table ", "<table width=\"95%\"").Trim();
                             //line =utf8.GetString(Encoding.Convert(utf16, utf8, utf16.GetBytes(line)));
                         }
 
+                        #endregion
+
+                        #region 批量处理没有绑定的控件
+                        //批量处理没有绑定的控件
+                        if (line.Contains("<aspxform:") && !line.Contains("XDataBind") && !line.Contains("Visibility=\"False\""))
+                        {
+                            string strPatternCommon = @"<aspxform:[\w]+";//获取控件名字
+                            string strControlCommon = "";
+                            foreach (Match matchControl in Regex.Matches(line, strPatternCommon))
+                            {
+                                strControlCommon = matchControl.Value;
+
+                            }
+                            line = line.Replace(strControlCommon, strControlCommon + " Visibility=\"False\"");
+                        }
+                        #endregion
+
+                        #region 批量处理CompanyName和批量替换隐藏字段
+                        //批量处理CompanyName
+                        if (line.Contains(".CompanyName\"") && !line.Contains("FieldName"))
+                        {
+                            line = line.Replace(".CompanyName\"", ".CompanyName\" FieldName=\"所属部门\"");
+                        }
+
+                        //批量替换隐藏字段
+                        if (line.Contains("HiddenExpress=\"1 == 1\"") && !line.Contains("FieldName"))
+                        {
+
+                            line = line.Replace("HiddenExpress=\"1 == 1\"", "HiddenExpress=\"1 == 1\" FieldName=\"桥接属性\"");
+                        }
+                        #endregion
+                        #region 批量修改js语法
+                        //批量修改js语法
                         if (line.Contains("getElementsByName", StringComparison.OrdinalIgnoreCase) && line.Contains("value", StringComparison.OrdinalIgnoreCase))
                         {
                             line = line.Replace("document.getElementsByName", "Ext.get").Replace(").value", ").down('.yz-xform-field-ele').dom.value");
@@ -462,6 +502,7 @@ namespace ForECC
                         {
                             line = line.Replace("document.getElementById", "$").Replace("\").innerHTML", ".yz-xform-field-ele\").html()");
                         }
+                        #endregion
                         Console.WriteLine("注释语句删除");
                         strContent = strContent + line + Environment.NewLine;
 
@@ -508,9 +549,158 @@ namespace ForECC
             #endregion
 
 
+            #region 批量给控件添加中文注释 old
+            //string strPattern = @"<p.*?>[\w\W]*?</aspxform:[\w]+>";//提取从p开始的字段
+            strPattern = @"[\s;][\u4e00-\u9fa5]+/?[\w\W]*?</aspxform:[\w]+>[\s]*(<aspxform.*?</aspxform:[\w]+>)*";//20210522添加,把同一个汉字下面跟着很多表单的都赋值
+            string strChinese = "";
+            string strFragment = "";//提取的片段
+            string strNewFragment = "";//要替换的的片段
+            string strControl = "";//控件
+            foreach (Match match in Regex.Matches(strContent, strPattern))
+            {
+                strFragment = match.Value;
+
+                if (Regex.IsMatch(strFragment, @"[\u4e00-\u9fa5]"))//判断里面是否有汉字
+                {
+                    //如果已经替换过的话跳出循环
+                    //if (strFragment.Contains("FieldName", StringComparison.OrdinalIgnoreCase))
+                    //{
+                    //    continue;
+                    //}
+                    strPattern = "[\u4e00-\u9fa5]+";//是否有汉字正则表达式
+                    strPattern = "(\\d?[\u4e00-\u9fa5]+/?)+";//是否有汉字正则表达式
+                    foreach (Match matchChinese in Regex.Matches(strFragment, strPattern))
+                    {
+
+                        strChinese = matchChinese.Value;
+                        if (strFragment.Contains("单号"))
+                        {
+                            if (strChinese == "单号")
+                            {
+                                break;//取到单号汉字就跳出了
+                            }
+                        }
+                        else
+                        {
+                            break;
+
+                        }
 
 
-            #region 更改函数体
+                    }
+                    strPattern = @"<aspxform:[\w]+\b(?!\sFieldName) id=""\w+""";//获取控件名字
+                    strPattern = @"<aspxform:[\w]+\b(?!\sFieldName)";//获取控件名字
+                    foreach (Match matchControl in Regex.Matches(strFragment, strPattern))
+                    {
+                        strControl = matchControl.Value;
+
+                        //break;
+                        if (strControl.Contains("CheckBox", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                        {
+                            continue;
+                        }
+                        if (strControl.Contains("XRequiredFieldValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                        {
+                            continue;
+                        }
+                        if (strControl.Contains("XCompareValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                        {
+                            continue;
+                        }
+                        if (strControl.Contains("XRegularExpressionValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                        {
+                            continue;
+                        }
+                        if (strControl.Contains("XRangeValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                        {
+                            continue;
+                        }
+                        if (strControl.Contains("XCustomValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+                        {
+                            continue;
+                        }
+                        //XCompareValidator1 XRangeValidator1 XCustomValidator1
+
+                        if (!string.IsNullOrEmpty(strControl))
+                        {
+                            strNewFragment = strFragment.Replace(strControl, strControl + " FieldName=\"" + strChinese + "\" ");
+
+                            strContent = strContent.Replace(strFragment, strNewFragment);
+                        }
+
+
+                    }
+
+                }
+
+            }
+            #endregion
+            #region 批量给控件添加中文注释New
+
+            //strPattern = @"<tr>[\s\S]+?</tr>";
+
+            //foreach (Match trItem in Regex.Matches(strContent, strPattern))
+            //{
+            //    string strSubPattern = @"<td>[\s\S]+?</td>";
+            //    string strTrFragment = trItem.Value;//
+            //    foreach (Match tditem in Regex.Matches(strTrFragment, strSubPattern))
+            //    {
+            //        string strTdFragment = tditem.Value;
+            //        string strChinese = Regex.Matches(strTrFragment, "(\\d?[\u4e00-\u9fa5]+/?)+")[0].Value;
+            //        foreach (Match aspControlItem in Regex.Matches(strTdFragment, @"<aspxform:[\w]+\b(?!\sFieldName)"))//查找未替换过得控件
+            //        {
+            //            string strControl = aspControlItem.Value;
+            //            if (strControl.Contains("CheckBox", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+            //            {
+            //                continue;
+            //            }
+            //            if (strControl.Contains("XRequiredFieldValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+            //            {
+            //                continue;
+            //            }
+            //            if (strControl.Contains("XCompareValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+            //            {
+            //                continue;
+            //            }
+            //            if (strControl.Contains("XRegularExpressionValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+            //            {
+            //                continue;
+            //            }
+            //            if (strControl.Contains("XRangeValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+            //            {
+            //                continue;
+            //            }
+            //            if (strControl.Contains("XCustomValidator", StringComparison.OrdinalIgnoreCase))//如果是checkbox的话不用替换
+            //            {
+            //                continue;
+            //            }
+            //            if (!string.IsNullOrEmpty(strControl))
+            //            {
+            //                string strNewFragment = strTdFragment.Replace(strControl, strControl + " FieldName=\"" + strChinese + "\" ");
+
+            //                strContent = strContent.Replace(strTdFragment, strNewFragment);
+            //            }
+
+            //        }
+
+            //    }
+                //GroupCollection groups = match.Groups;
+
+
+
+
+            //}
+
+
+
+
+
+            //strContent.Replace(strReplaceContent, "");
+            #endregion
+
+
+
+            #region 更改导出Excel函数体
             //要添加的函数体
             if (!strContent.Contains("GenExcelReport"))//如果没有替换过
             {
@@ -608,12 +798,16 @@ namespace ForECC
                         string strMendContent = @"
                                         <aspxform:XPositionMap id=""XPositionMap1"" runat=""server"" DataMap=""OUName->BPMCEDATA:{0}.CompanyName; ParentOUName->BPMCEDATA:{0}.{1}"" OULevel=""2级部门""></aspxform:XPositionMap>
                     ";
-
-                        strPattern = @"\.[a-zA-Z]*Dept[a-zA-Z]*";
                         string strDept = "";
+                        strPattern = @"\.[a-zA-Z]*Dept[a-zA-Z]*";
+                        //string strDept = "";
                         strDept = Regex.Match(strContent, strPattern).Value.Replace(".", "");
 
+                        strPattern = @"(?<=部门[\s\S]+?\.)Dept\w*?(?="")";
+                        strDept = Regex.Match(strContent, strPattern).Value;//使用正则表达式获取
+
                         strMendContent = string.Format(strMendContent, strTableName, strDept);
+
 
                         strPattern = @"<aspxform:XProcessButtonList.*?>[\s\S]*?</aspxform:XProcessButtonList>";
                         strContent = Regex.Replace(strContent, strPattern, strMendContent);
@@ -623,7 +817,7 @@ namespace ForECC
                     //要增加的部门名字代码
                     string strAddContent = @" 
                         <td width=""169"" class=""Col0"">
-                        <aspxform:XLabel id=""XLabe66"" runat=""server"" XDataBind=""BPMCEDATA:{0}.CompanyName"" BorderColor=""Transparent"" BackColor=""Transparent""></aspxform:XLabel >
+                        <aspxform:XLabel id=""XLabe66"" runat=""server"" XDataBind=""BPMCEDATA:{0}.CompanyName"" FieldName=""所属部门"" BorderColor=""Transparent"" BackColor=""Transparent""></aspxform:XLabel >
                         </td >
 ";
 
@@ -685,8 +879,8 @@ namespace ForECC
             //using (StreamWriter sw = new StreamWriter(strOriginFilePath))
             {
                 //在线预览功能已经添加标志位
-                string strHeadInfoAdd = "<%@ Register TagPrefix=\"aspxfrom\" Namespace=\"XFormDesigner.WebControls.Web.UI\" Assembly=\"XFormDesigner.WebControls\" %>";
-                strContent = "<%--convertedOnlinePreview--%>" + Environment.NewLine + strHeadInfoAdd + Environment.NewLine + strContent;
+                //string strHeadInfoAdd = "<%@ Register TagPrefix=\"aspxfrom\" Namespace=\"XFormDesigner.WebControls.Web.UI\" Assembly=\"XFormDesigner.WebControls\" %>";
+                //strContent = "<%--convertedOnlinePreview--%>" + Environment.NewLine + strHeadInfoAdd + Environment.NewLine + strContent;
                 sw.Write(strContent);
 
                 //foreach (string s in strNewContent.Split("&&&"))
@@ -1663,10 +1857,10 @@ namespace ForECC
                                         FormatAspxFile(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
 
 
-                                        FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
-                                        FormatAspxFileAddOnlinePreview(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
-                                                                            
-                                        FormatAspxFileConvertLableNameToCHAdd(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                        //FormatAspxFileConvertLableNameToCH(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+                                        //FormatAspxFileAddOnlinePreview(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
+
+                                        //FormatAspxFileConvertLableNameToCHAdd(AspxFile.FullName, AspxFile.Name.Replace(".aspx", ""), ECCFolder.Parent.Name);
                                     }
 
 
