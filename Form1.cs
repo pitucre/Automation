@@ -803,8 +803,8 @@ namespace ForECC
                         //string strDept = "";
                         strDept = Regex.Match(strContent, strPattern).Value.Replace(".", "");
 
-                        strPattern = @"(?<=部门[\s\S]+?\.)Dept\w*?(?="")";
-                        strDept = Regex.Match(strContent, strPattern).Value;//使用正则表达式获取
+                        strPattern = @"(?<=部门[\s\S]+?\.)Dept\w*?(?="")";//修正增加了忽略大小写d的判断
+                        strDept = Regex.Match(strContent, strPattern,RegexOptions.IgnoreCase).Value;//使用正则表达式获取
 
                         strMendContent = string.Format(strMendContent, strTableName, strDept);
 
@@ -836,7 +836,7 @@ namespace ForECC
                             string strLongColspan = match.Value;//包含colspan的长字符串
                             string strNewPattern = @"colspan=""[0-9]""";
                             string strShortColspan = Regex.Match(strLongColspan, strNewPattern).Value;//包含colspan的短字符串
-                            strNewPattern = "[0-9]";
+                            strNewPattern = "[0-9]+";
                             int icolspan = Convert.ToInt16(Regex.Match(strLongColspan, strNewPattern).Value);
                             string strNewShortColspan = strShortColspan.Replace((icolspan).ToString(), (icolspan - 1).ToString());//数字减1替换字符串
                             string strNewLongColspan = strLongColspan.Replace(strShortColspan, strNewShortColspan);
@@ -1874,7 +1874,7 @@ namespace ForECC
                         }
 
                     }
-                    MessageBox.Show("left:" + icountTotal1 + "  right:" + iCountTotal2);
+                    //MessageBox.Show("left:" + icountTotal1 + "  right:" + iCountTotal2);
                     icountTotal1 = 0;
                     iCountTotal2 = 0;
                     lblCountAspx.Text = ltBoxAspx.Items.Count.ToString() + "个";
